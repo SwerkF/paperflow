@@ -28,6 +28,25 @@
       "example": "DEV-2025-0045"
     },
     {
+    "name": "nom_client",
+    "description": "Nom prénom d'une personne ou nom de l'entreprise",
+    "recognition": {
+        "expected_format": "texte alphanumérique avec accents, espaces, tirets, apostrophes et caractères d'entreprise",
+        "regex": "^[A-Za-zÀ-ÖØ-öø-ÿ0-9]+([ '&.,/-][A-Za-zÀ-ÖØ-öø-ÿ0-9]+)*$",
+        "notes": "Accepte noms/prénoms (Jean Dupont) et noms d'entreprise (SAS Dupont & Fils, SARL Tech-2000). Pas de caractères spéciaux en début/fin ni en double."
+    },
+    "examples": [
+        "Dupont",
+        "Jean Dupont",
+        "Jean-Pierre",
+        "D'Artagnan",
+        "Dupont SARL",
+        "Tech 2000",
+        "SAS Dupont & Fils",
+        "Entreprise ABC-Services"
+    ]
+    },
+    {
       "name": "ENTREPRISE_siret_fournisseur",
       "description": "SIRET de l’entreprise fournisseur",
       "recognition": {
