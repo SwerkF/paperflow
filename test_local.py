@@ -8,7 +8,7 @@ from paddleocr import PaddleOCR
 os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 os.environ["FLAGS_use_mkldnn"] = "0"
 
-IMAGE_PATH = "http://127.0.0.1:8000/facture_electricite.png"
+IMAGE_PATH = "http://127.0.0.1:8000/Devis.png"
 OUTPUT_DIR = Path("output2")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
