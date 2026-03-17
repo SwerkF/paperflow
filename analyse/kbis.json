@@ -1,0 +1,112 @@
+{
+  "table": "KBIS",
+  "fields": [
+    {
+      "name": "numero_gestion",
+      "description": "Numéro de gestion unique lié au document KBIS",
+      "recognition": {
+        "expected_format": "chaîne alphanumérique, souvent structurée avec chiffres, lettres, tirets ou slashs",
+        "regex_examples": [
+          "^[A-Z0-9\\-_/]{3,50}$",
+          "^[0-9A-Z]{4,30}$"
+        ],
+        "notes": "Le format exact dépend de la source émettrice. C’est un identifiant administratif."
+      },
+      "example": "2025B01234"
+    },
+    {
+      "name": "ENTREPRISE_siren_entreprise",
+      "description": "Numéro SIREN de l’entreprise",
+      "recognition": {
+        "expected_format": "9 chiffres",
+        "regex": "^\\d{9}$",
+        "length": 9,
+        "notes": "Le SIREN français contient exactement 9 chiffres, sans espace."
+      },
+      "example": "552100554"
+    },
+    {
+      "name": "code_verification_infogreffe",
+      "description": "Code de vérification du document délivré par Infogreffe",
+      "recognition": {
+        "expected_format": "chaîne alphanumérique",
+        "regex_examples": [
+          "^[A-Z0-9]{4,30}$",
+          "^[A-Z0-9\\-]{4,30}$"
+        ],
+        "notes": "Le format peut varier selon le document généré par Infogreffe."
+      },
+      "example": "AB12CD34"
+    },
+    {
+      "name": "greffe_immatriculation",
+      "description": "Nom du greffe où l’entreprise est immatriculée",
+      "recognition": {
+        "expected_format": "texte libre",
+        "regex_example": "^.{1,150}$",
+        "notes": "Correspond généralement à un libellé comme 'Paris', 'Lyon', 'Marseille' ou 'Greffe du tribunal de commerce de Paris'."
+      },
+      "example": "Greffe du tribunal de commerce de Paris"
+    },
+    {
+      "name": "immatriculation_rcs",
+      "description": "Numéro d’immatriculation au RCS",
+      "recognition": {
+        "expected_format": "souvent sous la forme 'RCS Ville + 9 chiffres' ou variante proche",
+        "regex_examples": [
+          "^RCS\\s+[A-Za-zÀ-ÖØ-öø-ÿ' -]+\\s+\\d{9}$",
+          "^[A-Za-zÀ-ÖØ-öø-ÿ' -]+\\s+[A-Z]?\\s?\\d{9}$"
+        ],
+        "notes": "Le format peut apparaître comme 'RCS Paris 552100554' ou sous une autre présentation selon la source."
+      },
+      "example": "RCS Paris 552100554"
+    },
+    {
+      "name": "date_immatriculation",
+      "description": "Date d’immatriculation de l’entreprise",
+      "recognition": {
+        "expected_format": "JJ/MM/AAAA",
+        "regex": "^(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[0-2])\\/\\d{4}$",
+        "notes": "Validation complémentaire recommandée pour vérifier que la date existe réellement."
+      },
+      "example": "12/04/2018"
+    },
+    {
+      "name": "date_mise_a_jour",
+      "description": "Date de mise à jour du document KBIS",
+      "recognition": {
+        "expected_format": "JJ/MM/AAAA",
+        "regex": "^(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[0-2])\\/\\d{4}$",
+        "notes": "Validation complémentaire recommandée pour vérifier que la date existe réellement."
+      },
+      "example": "01/09/2025"
+    },
+    {
+      "name": "duree_personne_morale",
+      "description": "Durée de vie statutaire de la personne morale",
+      "recognition": {
+        "expected_format": "texte contenant une durée, souvent en années",
+        "regex_examples": [
+          "^\\d{1,3}\\s*(ans|an)$",
+          "^Durée\\s*:\\s*\\d{1,3}\\s*(ans|an)$"
+        ],
+        "notes": "Souvent exprimé sous la forme '99 ans'."
+      },
+      "example": "99 ans"
+    },
+    {
+      "name": "date_cloture_exercice_social",
+      "description": "Date ou période de clôture de l’exercice social",
+      "recognition": {
+        "expected_format": "souvent une date partielle ou une mention annuelle récurrente",
+        "regex_examples": [
+          "^\\d{2}\\/\\d{2}$",
+          "^\\d{2}\\/\\d{2}\\/\\d{4}$",
+          "^[A-Za-zÀ-ÖØ-öø-ÿ0-9\\s/-]{3,50}$"
+        ],
+        "notes": "Peut être stocké sous forme '31/12', '31/12/2025' ou texte métier selon la source."
+      },
+      "example": "31/12"
+    }
+  ]
+}

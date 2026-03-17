@@ -1,0 +1,129 @@
+{
+  "table": "DEVIS",
+  "fields": [
+    {
+      "name": "reference_devis",
+      "description": "Référence unique du devis",
+      "recognition": {
+        "expected_format": "chaîne alphanumérique avec éventuels tirets, slashs ou underscores",
+        "regex_examples": [
+          "^[A-Z0-9\\-_/]{3,50}$",
+          "^DEV[-_/]?[0-9]{4}[-_/]?[0-9]{1,10}$"
+        ],
+        "notes": "Le format exact dépend de la convention métier. Exemple fréquent : DEV-2025-0001."
+      },
+      "example": "DEV-2025-0001"
+    },
+    {
+      "name": "ENTREPRISE_siret_fournisseur",
+      "description": "SIRET de l’entreprise fournisseur",
+      "recognition": {
+        "expected_format": "14 chiffres",
+        "regex": "^\\d{14}$",
+        "length": 14,
+        "notes": "Un SIRET français contient exactement 14 chiffres, sans espace."
+      },
+      "example": "73282932000074"
+    },
+    {
+      "name": "ENTREPRISE_siret_client",
+      "description": "SIRET de l’entreprise cliente",
+      "recognition": {
+        "expected_format": "14 chiffres",
+        "regex": "^\\d{14}$",
+        "length": 14,
+        "notes": "Un SIRET français contient exactement 14 chiffres, sans espace."
+      },
+      "example": "55210055400013"
+    },
+    {
+      "name": "nom_emetteur",
+      "description": "Nom de la personne qui émet le devis",
+      "recognition": {
+        "expected_format": "texte alphabétique, éventuellement avec accents, tirets, apostrophes et espaces",
+        "regex": "^[A-Za-zÀ-ÖØ-öø-ÿ' -]{1,100}$",
+        "notes": "Nom de famille ou nom complet selon l’usage métier."
+      },
+      "example": "Dupont"
+    },
+    {
+      "name": "prenom_emetteur",
+      "description": "Prénom de la personne qui émet le devis",
+      "recognition": {
+        "expected_format": "texte alphabétique, éventuellement avec accents, tirets, apostrophes et espaces",
+        "regex": "^[A-Za-zÀ-ÖØ-öø-ÿ' -]{1,100}$",
+        "notes": "Prénom simple ou composé."
+      },
+      "example": "Jean"
+    },
+    {
+      "name": "fonction_emetteur",
+      "description": "Fonction ou poste de l’émetteur du devis",
+      "recognition": {
+        "expected_format": "texte libre court",
+        "regex_example": "^.{1,150}$",
+        "notes": "Peut contenir un intitulé de poste : Commercial, Gérant, Responsable achats, etc."
+      },
+      "example": "Commercial"
+    },
+    {
+      "name": "date_emission",
+      "description": "Date d’émission du devis",
+      "recognition": {
+        "expected_format": "JJ/MM/AAAA",
+        "regex": "^(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[0-2])\\/\\d{4}$",
+        "notes": "Validation complémentaire recommandée pour vérifier que la date existe réellement."
+      },
+      "example": "15/09/2025"
+    },
+    {
+      "name": "date_validite_jours",
+      "description": "Durée de validité du devis en nombre de jours",
+      "recognition": {
+        "expected_format": "nombre entier positif",
+        "regex": "^\\d+$",
+        "notes": "Exprimé en jours. Exemple : 30, 60, 90."
+      },
+      "example": 30
+    },
+    {
+      "name": "montant_total_ht",
+      "description": "Montant total hors taxes du devis",
+      "recognition": {
+        "expected_format": "nombre décimal positif avec 2 décimales idéalement",
+        "regex": "^\\d+(\\.\\d{1,2})?$",
+        "notes": "Montant monétaire. Généralement positif."
+      },
+      "example": "1250.00"
+    },
+    {
+      "name": "montant_total_ttc",
+      "description": "Montant total toutes taxes comprises du devis",
+      "recognition": {
+        "expected_format": "nombre décimal positif avec 2 décimales idéalement",
+        "regex": "^\\d+(\\.\\d{1,2})?$",
+        "notes": "Montant monétaire. Généralement positif et supérieur ou égal au HT."
+      },
+      "example": "1500.00"
+    },
+    {
+      "name": "bon_pour_accord_signe",
+      "description": "Indique si le devis a été signé avec la mention bon pour accord",
+      "recognition": {
+        "expected_format": "booléen",
+        "accepted_values": [
+          true,
+          false,
+          "true",
+          "false",
+          "oui",
+          "non",
+          "1",
+          "0"
+        ],
+        "notes": "Selon le système, peut être stocké sous forme booléenne stricte ou converti depuis oui/non, 1/0."
+      },
+      "example": true
+    }
+  ]
+}
