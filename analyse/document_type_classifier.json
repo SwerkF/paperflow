@@ -1,0 +1,93 @@
+{
+  "description": "Classification du type de document par regex. Le premier type dont au moins une regex matche peut etre retenu comme type probable.",
+  "match_strategy": "first_matching_type",
+  "document_types": [
+    {
+      "type": "devis",
+      "description": "Documents de devis / quotation",
+      "regexes": [
+        "\\bDEVIS\\b",
+        "\\bDevis\\b",
+        "R[ée]f[ée]rence du devis",
+        "Date de validit[eé]",
+        "Signature du client",
+        "bon pour accord",
+        "Destinataire",
+        "A l'attention de\\s*:?",
+        "Code Client\\s*:?",
+        "Devis valable"
+      ]
+    },
+    {
+      "type": "facture",
+      "description": "Documents de facture / invoice",
+      "regexes": [
+        "\\bFACTURE\\b",
+        "\\bFacture\\b",
+        "Num[ée]ro de facture",
+        "Date de facture",
+        "N\\.?\\s*client",
+        "Mode de pai?ement",
+        "Conditions de paiement",
+        "Total HT",
+        "Total TTC"
+      ]
+    },
+    {
+      "type": "kbis",
+      "description": "Extrait Kbis / registre du commerce",
+      "regexes": [
+        "\\bKBIS\\b",
+        "\\bKbis\\b",
+        "Greffe du Tribunal de Commerce",
+        "IDENTIFICATION DE LA PERSONNE MORALE",
+        "Immatriculation au RCS",
+        "Dénomination ou raison sociale",
+        "GESTION, DIRECTION",
+        "Le Greffier"
+      ]
+    },
+    {
+      "type": "rib",
+      "description": "Releve d'identite bancaire",
+      "regexes": [
+        "Relev[ée]\\s+d[’']?identit[ée]\\s+bancaire",
+        "RELEVE\\s+D[’']IDENTITE\\s+BANCAIRE",
+        "Identifiant national de compte bancaire\\s*-?\\s*RIB",
+        "\\bRIB\\b",
+        "\\bIBAN\\b",
+        "\\bBIC\\b",
+        "Titulaire du compte",
+        "Code Banque",
+        "Code Guichet",
+        "Cl[ée]\\s+RIB"
+      ]
+    },
+    {
+      "type": "attestation_siret",
+      "description": "Attestation d'immatriculation au RNE / SIRET",
+      "regexes": [
+        "ATTESTATION D['’]IMMATRICULATION AU REGISTRE NATIONAL DES ENTREPRISES",
+        "\\bREGISTRE NATIONAL DES ENTREPRISES\\b",
+        "Identit[ée] de l'entreprise",
+        "SIREN \\(si[èe]ge\\)",
+        "Date d'immatriculation au RNE",
+        "Adresse du si[èe]ge",
+        "\\bSiret\\b"
+      ]
+    },
+    {
+      "type": "attestation_vigilance_urssaf",
+      "description": "Attestation de vigilance URSSAF",
+      "regexes": [
+        "\\bUrssaf\\b",
+        "Au service de notre protection sociale",
+        "Article\\s*L?\\.?243-15",
+        "CODE DE SECURITE",
+        "cotisations et contributions sociales",
+        "authenticit[ée] de cette attestation",
+        "Le Directeur"
+      ]
+    }
+  ]
+}
