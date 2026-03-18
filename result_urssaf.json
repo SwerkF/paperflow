@@ -2,51 +2,73 @@
     "data": {
         "bloc_cadre_legal": {
             "description": "Cadre l\u00e9gal et code de s\u00e9curit\u00e9",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "ArticleL.243-15 du code de la Securit\u00e9 sociale Madame, Monsieur, CODE DE SECURITE Je vous adresse votre attestation de fourniture des declarations sociales et de paiement des cotisations et contributions soclales. V99142DP2YW3NVT En votre",
+            "groups": {
+                "code_securite": "V99142DP2YW3NVT"
+            },
+            "matched": true,
             "regex": "ArticleL?\\.?243-15\\s+du\\s+code\\s+de\\s+la\\s+Securit[\u00e9e]\\s+sociale\\s+Madame,\\s+Monsieur,\\s+CODE DE SECURITE\\s+.*?\\s+([A-Z0-9]{10,20})\\s+En votre"
         },
         "bloc_date_destinataire": {
             "description": "Date et destinataire",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "AVENISSIEUX,le 26/01/2022 6 rue du 19 Mars 1962 URSSAF RHONE-ALPES 69691 VENISSIEUX CEDEX POUR NOUS CONTACTER Courriel: depuis votre espace urssaf.fr Tel: 3957 SAS ELYOTHERM REFERENCES TRAVINSTALEQUIPEMENTS THERMIQUE 9 BD AMBROISE PARE N\u00b0SIREN 510395239 69330 MEYZIEU",
+            "groups": {
+                "activite_destinataire": "TRAVINSTALEQUIPEMENTS THERMIQUE",
+                "adresse_destinataire": "9 BD AMBROISE PARE",
+                "date_document": "AVENISSIEUX,le 26/01/2022",
+                "raison_sociale": "SAS ELYOTHERM",
+                "ville_destinataire": "69330 MEYZIEU"
+            },
+            "matched": true,
             "regex": "([A-Z]+,?le\\s+[0-9]{2}/[0-9]{2}/[0-9]{4})\\s+\\d+\\s+rue du\\s+\\d+\\s+Mars\\s+\\d+\\s+URSSAF RHONE-ALPES\\s+\\d{5}\\s+VENISSIEUX CEDEX\\s+POUR NOUS CONTACTER\\s+Courriel:?\\s+.+?\\s+Tel:?\\s+\\d{4}\\s+(SAS\\s+ELYOTHERM)\\s+REFERENCES\\s+(TRAVINSTALEQUIPEMENTS\\s+THERMIQUE)\\s+(\\d+\\s+BD\\s+AMBROISE\\s+PARE)\\s+N.?SIREN\\s+\\d{9}\\s+(\\d{5}\\s+MEYZIEU)"
         },
         "bloc_emetteur": {
             "description": "Bloc \u00e9metteur URSSAF",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "Urssaf Au service de notre protection sociale AVENISSIEUX,le 26/01/2022 6 rue du 19 Mars 1962 URSSAF RHONE-ALPES 69691 VENISSIEUX CEDEX POUR NOUS CONTACTER Courriel: depuis votre espace urssaf.fr Tel: 3957 SAS ELYOTHERM REFERENCES TRAVINSTALEQUIPEMENTS THERMIQUE 9 BD AMBROISE PARE N\u00b0SIREN 510395239",
+            "groups": {
+                "marque": "Urssaf",
+                "mode_contact": "depuis votre espace urssaf.fr",
+                "organisme_adresse": "AVENISSIEUX,le 26/01/2022 6 rue du 19 Mars 1962 URSSAF RHONE-ALPES 69691 VENISSIEUX CEDEX",
+                "siren_urssaf": "510395239",
+                "telephone": "3957"
+            },
+            "matched": true,
             "regex": "(Urssaf)\\s+Au service de notre protection sociale\\s+([A-Z]+,?le\\s+[0-9]{2}/[0-9]{2}/[0-9]{4}\\s+\\d+\\s+rue du\\s+\\d+\\s+Mars\\s+\\d+\\s+URSSAF RHONE-ALPES\\s+\\d{5}\\s+VENISSIEUX CEDEX)\\s+POUR NOUS CONTACTER\\s+Courriel:?\\s+(.+?)\\s+Tel:?\\s+(\\d{4})\\s+SAS ELYOTHERM\\s+REFERENCES\\s+TRAVINSTALEQUIPEMENTS THERMIQUE\\s+\\d+\\s+BD\\s+AMBROISE\\s+PARE\\s+N.?SIREN\\s+(\\d{9})"
         },
         "bloc_message_principal": {
             "description": "Corps principal de la lettre",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "Madame, Monsieur, CODE DE SECURITE Je vous adresse votre attestation de fourniture des declarations sociales et de paiement des cotisations et contributions soclales. V99142DP2YW3NVT En votre gualite d'employeur,cette attestation vous est delivree pour les \u00e9tablissements dont la La verification de l'authenticit\u00e9 et de la liste figure au verso. validite de ce document s'effectue sur urssaf.fr/portail/home/utile-et-pratique/veri fication-attestation.html J'attire votre attention sur le fait que ce document a \u00e9te etabli a partir de vos declarations.ll ne prejuge pas de l'exactitude de ces declarations et ne vaut pas renonciation au recouvrement d'eventuelles creances. La validite de cette attestation et le detail des informations contenues doivent etre controles par votre cocontractant. Pour tout renseignement complementaire,nhesitez pas a prendre contact avec nos conseillers Urssaf.",
+            "groups": {
+                "message": "Je vous adresse votre attestation de fourniture des declarations sociales et de paiement des cotisations et contributions soclales. V99142DP2YW3NVT En votre gualite d'employeur,cette attestation vous est delivree pour les \u00e9tablissements dont la La verification de l'authenticit\u00e9 et de la liste figure au verso. validite de ce document s'effectue sur urssaf.fr/portail/home/utile-et-pratique/veri fication-attestation.html J'attire votre attention sur le fait que ce document a \u00e9te etabli a partir de vos declarations.ll ne prejuge pas de l'exactitude de ces declarations et ne vaut pas renonciation au recouvrement d'eventuelles creances. La validite de cette attestation et le detail des informations contenues doivent etre controles par votre cocontractant. Pour tout renseignement complementaire,nhesitez pas a prendre contact avec nos conseillers Urssaf."
+            },
+            "matched": true,
             "regex": "Madame,\\s+Monsieur,\\s+CODE DE SECURITE\\s+(Je vous adresse.+?Pour tout renseignement complementaire,nhesitez pas a prendre contact avec nos conseillers\\s+Urssaf\\.)"
         },
         "bloc_objet": {
             "description": "Objet de l'attestation",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "OBJET : Attestation de fourniture des d\u00e9clarations sociales et paiement des cotisations et contributions sociales",
+            "groups": {
+                "objet": "Attestation de fourniture des d\u00e9clarations sociales et paiement des cotisations et contributions sociales"
+            },
+            "matched": true,
             "regex": "OBJET\\s*:?\\s*(Attestation de fourniture des d[\u00e9e]clarations sociales et paiement des cotisations et contributions sociales)"
         },
         "bloc_signature": {
             "description": "Formule de politesse et signataire",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "Cordialement, Le Directeur Frederique MiNY S2",
+            "groups": {
+                "signataire": "Frederique MiNY"
+            },
+            "matched": true,
             "regex": "Cordialement,\\s+Le Directeur\\s+([A-Za-z\u00c9\u00e9\u00c8\u00e8\u00ca\u00ea\u00cb\u00eb\u00ce\u00ee\u00cf\u00ef\u00d4\u00f4\u00d6\u00f6\u00d9\u00f9\u00db\u00fb\u00dc\u00fc\u00c7\u00e7\\s]+?)\\s+S\\d"
         },
         "document_type": {
             "description": "Type de document",
-            "full_match": null,
-            "groups": {},
-            "matched": false,
+            "full_match": "Attestation de fourniture des d\u00e9clarations sociales et paiement des cotisations et contributions sociales",
+            "groups": {
+                "1": "Attestation de fourniture des d\u00e9clarations sociales et paiement des cotisations et contributions sociales"
+            },
+            "matched": true,
             "regex": "(Attestation de fourniture des d[\u00e9e]clarations sociales et paiement des cotisations et contributions sociales)"
         }
     },

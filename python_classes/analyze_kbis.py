@@ -2,6 +2,7 @@ import json
 import os
 import re
 from pathlib import Path
+import tempfile
 
 class AnalyzeKBIS:
     def __init__(self,ocr_model, config_path: str | Path = "analyse/kbis.json"):
@@ -109,17 +110,31 @@ class AnalyzeKBIS:
         return extracted
 
     def analyze(self, image_path: str) -> dict:
-        """Exécute l'OCR sur un extrait KBIS et extrait tous les blocs configurés."""
-
         results = self.ocr_model.predict(input=str(image_path))
         
         rec_texts = []
-        for page in results:
-            if not page: continue
-            for item in page:
-                rec_texts.append(str(item[1][0]))
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir_path = Path(temp_dir)
+            
+            for index, res in enumerate(results):
+                result_path = temp_dir_path / f"temp_result_{index}.json"
+                res.save_to_json(str(result_path))
                 
-        raw_joined_text = " ".join(text.strip() for text in rec_texts if text.strip())
+                with result_path.open("r", encoding="utf-8") as handle:
+                    page_data = json.load(handle)
+                    
+                page_texts = page_data.get("rec_texts", [])
+                
+                if isinstance(page_texts, list):
+                    for item in page_texts:
+                        text_str = str(item).strip()
+                        if text_str:
+                            rec_texts.append(text_str)
+
+        # CORRECTION ICI : Jointure classique et normalisation du bloc entier
+        raw_joined_text = " ".join(rec_texts)
         joined_text = self.normalize_text(raw_joined_text)
 
+        # Extraction dynamique à partir du JSON
         return self._extract_blocks(joined_text)

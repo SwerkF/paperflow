@@ -349,7 +349,6 @@ class AnalyzeFacture:
         results = self.ocr_model.predict(input=str(image_path))
         
         rec_texts = []
-        records = []
         
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_dir_path = Path(temp_dir)
@@ -362,30 +361,16 @@ class AnalyzeFacture:
                     page_data = json.load(handle)
                     
                 page_texts = page_data.get("rec_texts", [])
-                page_boxes = page_data.get("rec_boxes", [])
                 
                 if isinstance(page_texts, list):
-                    for i, item in enumerate(page_texts):
+                    for item in page_texts:
                         normalized = self.normalize_text(str(item))
-                        if not normalized:
-                            continue
-                        
-                        rec_texts.append(normalized)
-                        
-                        if isinstance(page_boxes, list) and i < len(page_boxes):
-                            box = page_boxes[i]
-                            if isinstance(box, list) and len(box) == 4:
-                                records.append({
-                                    "text": normalized,
-                                    "x1": float(box[0]),
-                                    "y1": float(box[1]),
-                                    "x2": float(box[2]),
-                                    "y2": float(box[3]),
-                                    "x_center": (float(box[0]) + float(box[2])) / 2,
-                                })
+                        if normalized:
+                            rec_texts.append(normalized)
 
         joined_text = self.join_tokens(rec_texts)
-        vendor_entry, client_entry = self._extract_vendor_and_client(rec_texts, records)
+        
+        vendor_entry, client_entry = self._extract_client_and_vendor(rec_texts)
 
         return {
             "document_type": self._extract_document_type(joined_text),
