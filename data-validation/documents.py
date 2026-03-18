@@ -3,25 +3,43 @@ from validator import ServiceValidation
 
 documents_bp = Blueprint('documents', __name__)
 
-validateur = ServiceValidation()
-
 @documents_bp.route('/api/v1/documents/batch', methods=['POST'])
 def process_documents_batch():
     """
-    Endpoint qui reçoit une liste de documents extraits par l'OCR.
-    Format attendu : JSON contenant un tableau d'objets.
+    Endpoint qui reçoit un batch contextualisé de documents extraits par l'OCR.
+    Format attendu : JSON contenant un objet avec:
+      - contexte_utilisateur (objet)
+      - documents (tableau)
     """
+    validator = ServiceValidation()
+
     data = request.get_json()
 
-    if not data or not isinstance(data, list):
-        return jsonify({"erreur": "Format invalide. Un tableau JSON est attendu."}), 400
+    if not data or not isinstance(data, dict):
+        return (
+            jsonify(
+                {
+                    "erreur": "Format invalide. Un objet JSON est attendu.",
+                    "attendu": {"contexte_utilisateur": {}, "documents": []},
+                }
+            ),
+            400,
+        )
 
-    alertes = validateur.valider_lot_documents(data)
+    contexte_utilisateur = data.get("contexte_utilisateur")
+    documents = data.get("documents")
+
+    if not isinstance(contexte_utilisateur, dict):
+        return jsonify({"erreur": "Format invalide. 'contexte_utilisateur' doit être un objet."}), 400
+    if not isinstance(documents, list):
+        return jsonify({"erreur": "Format invalide. 'documents' doit être un tableau."}), 400
+
+    alertes = validator.validate_documents(contexte_utilisateur, documents)
 
     reponse = {
         "code": 200,
         "statut": "success",
-        "documents_traites": len(data),
+        "documents_traites": len(documents),
         "anomalies_detectees": len(alertes),
         "details_alertes": alertes
     }

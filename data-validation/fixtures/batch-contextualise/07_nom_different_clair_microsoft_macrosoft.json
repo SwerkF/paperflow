@@ -1,0 +1,53 @@
+{
+  "contexte_utilisateur": {
+    "entreprise_id": "ENT-777",
+    "nom_principal": "Microsoft",
+    "siret_principal": "73282932000074"
+  },
+  "documents": [
+    {
+      "id": "FAC-007",
+      "document_type": { "full_match": "FACTURE", "groups": { "1": "FACTURE" } },
+      "bloc_signature_coordonnees": {
+        "groups": {
+          "nom_societe": "Macrosoft",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_client": {
+        "groups": {
+          "societe_client": "Macrosoft",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_totaux_tva": {
+        "groups": {
+          "total_ht": "100,00 €",
+          "total_ttc": "120,00 €"
+        }
+      }
+    },
+    {
+      "id": "FAC-008",
+      "document_type": { "full_match": "FACTURE", "groups": { "1": "FACTURE" } },
+      "bloc_signature_coordonnees": {
+        "groups": {
+          "nom_societe": "Macrosoft",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_client": {
+        "groups": {
+          "societe_client": "Macrosoft",
+          "siret": "73282932002074"
+        }
+      },
+      "bloc_totaux_tva": {
+        "groups": {
+          "total_ht": "100,00 €",
+          "total_ttc": "120,00 €"
+        }
+      }
+    }
+  ]
+}

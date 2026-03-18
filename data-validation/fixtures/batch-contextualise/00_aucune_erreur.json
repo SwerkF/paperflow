@@ -1,0 +1,59 @@
+{
+  "contexte_utilisateur": {
+    "entreprise_id": "ENT-999",
+    "nom_principal": "MaSuperBoite SAS",
+    "siret_principal": "73282932000074"
+  },
+  "documents": [
+    {
+      "id": "FAC-001",
+      "document_type": { "full_match": "FACTURE", "groups": { "1": "FACTURE" } },
+      "bloc_signature_coordonnees": {
+        "groups": {
+          "nom_societe": "MaSuperBoite SAS",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_client": {
+        "groups": {
+          "societe_client": "MaSuperBoite SAS",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_totaux_tva": {
+        "groups": {
+          "total_ht": "1 000,00 €",
+          "total_ttc": "1 200,00 €"
+        }
+      }
+    },
+    {
+      "id": "DEV-001",
+      "document_type": { "full_match": "Devis", "groups": { "1": "Devis" } },
+      "bloc_vendeur": {
+        "groups": {
+          "nom_entreprise": "MaSuperBoite SAS"
+        }
+      },
+      "bloc_signature_coordonnees": {
+        "groups": {
+          "nom_societe": "MaSuperBoite SAS",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_client": {
+        "groups": {
+          "societe_client": "MaSuperBoite SAS",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_totaux": {
+        "groups": {
+          "total_ht": "250,00 €",
+          "total_tva": "50,00 €",
+          "total_ttc": "300,00 €"
+        }
+      }
+    }
+  ]
+}

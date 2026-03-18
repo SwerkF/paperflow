@@ -1,0 +1,37 @@
+{
+  "contexte_utilisateur": {
+    "entreprise_id": "ENT-999",
+    "nom_principal": "MaSuperBoite SAS",
+    "siret_principal": "73282932000074"
+  },
+  "documents": [
+    {
+      "id": "URS-004A",
+      "document_type": { "full_match": "Urssaf", "groups": { "1": "Urssaf" } },
+      "bloc_date_destinataire": {
+        "groups": {
+          "raison_sociale": "MaSuperBoite SAS"
+        }
+      },
+      "bloc_emetteur": {
+        "groups": {
+          "siret_urssaf": "7328293200007"
+        }
+      }
+    },
+    {
+      "id": "URS-004B",
+      "document_type": { "full_match": "Urssaf", "groups": { "1": "Urssaf" } },
+      "bloc_date_destinataire": {
+        "groups": {
+          "raison_sociale": "MaSuperBoite SAS"
+        }
+      },
+      "bloc_emetteur": {
+        "groups": {
+          "siret_urssaf": "12345678901234"
+        }
+      }
+    }
+  ]
+}
