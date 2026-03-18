@@ -323,11 +323,13 @@ def extract_signature_coordonnees(rec_texts: list[str], joined_text: str, config
     iban = token_value(r"^IBAN\b", r"^IBAN\s*")
     contact = segment_tokens[iban_index + 1] if iban_index is not None and iban_index + 1 < len(segment_tokens) else ""
     city = ""
+
     if iban_index is not None:
         for token in segment_tokens[iban_index + 2 :]:
             if is_postal_city(token):
                 city = token
                 break
+            
     bic = token_value(r"^BIC\b", r"^BIC\s*")
     country = segment_tokens[bic_index + 1] if bic_index is not None and bic_index + 1 < len(segment_tokens) else ""
     siret = token_value(r"Siret", r"^N.? ?Siret\s*")

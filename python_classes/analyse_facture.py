@@ -2,15 +2,15 @@ import json
 import os
 import re
 import unicodedata
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 class AnalyzeFacture:
     def __init__(self, ocr_model, config_path: str | Path = "analyse/facture.json"):
         """Initialise l'analyseur de Facture avec son fichier de configuration."""
         self.config_path = Path(config_path)
         self.ocr_model = ocr_model
-
+        
         # Chargement de la configuration
         with self.config_path.open("r", encoding="utf-8") as handle:
             self.config = json.load(handle)
@@ -272,7 +272,7 @@ class AnalyzeFacture:
         pattern = (
             r"Conditions de paiement\s*:\s*(.+?)\s+"
             r"(?:[0-9 ]+[.,][0-9]{2}\s*€?)?\s*"
-            r"Mode de pai?ement\s*:\s*(.+?)\s+"
+            r"Mode de paiement\s*:\s*(.+?)\s+"
             r"Nous vous remercions"
         )
         match = re.search(pattern, joined_text, flags=re.IGNORECASE)
@@ -309,8 +309,8 @@ class AnalyzeFacture:
         address = segment_tokens[directeur_index + 1] if directeur_index is not None and directeur_index + 1 < len(segment_tokens) else ""
         iban = token_value(r"^IBAN\b", r"^IBAN\s*")
         contact = segment_tokens[iban_index + 1] if iban_index is not None and iban_index + 1 < len(segment_tokens) else ""
-        
         city = ""
+
         if iban_index is not None:
             for token in segment_tokens[iban_index + 2 :]:
                 if self.is_postal_city(token):
@@ -346,10 +346,11 @@ class AnalyzeFacture:
         )
 
     def analyze(self, image_path: str) -> dict:
+        """Exécute l'OCR sur une facture et extrait tous les blocs."""
+
         results = self.ocr_model.predict(input=str(image_path))
         
         rec_texts = []
-        
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_dir_path = Path(temp_dir)
             
@@ -369,7 +370,7 @@ class AnalyzeFacture:
                             rec_texts.append(normalized)
 
         joined_text = self.join_tokens(rec_texts)
-        
+
         vendor_entry, client_entry = self._extract_client_and_vendor(rec_texts)
 
         return {
