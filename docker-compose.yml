@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    container_name: datalake_api
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb+srv://myriamvicleunang24_db_user:l8yvPPZUiDRFi4Bn@datalake.xd5gm0d.mongodb.net/?retryWrites=true&w=majority&appName=Datalake
+      - DB_NAME=datalake_admin
+    restart: unless-stopped
