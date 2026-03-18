@@ -1,5 +1,8 @@
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Sur Render, load_dotenv() n’est pas utile, on utilise les variables d’env directement
 MONGODB_URI = os.getenv("MONGODB_URI")
