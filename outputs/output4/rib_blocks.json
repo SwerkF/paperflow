@@ -1,0 +1,134 @@
+{
+  "source_image": "documents/rib/rib3.png",
+  "ocr_result_file": "output4/rib_result.json",
+  "regex_config_file": "analyse/rib.json",
+  "rec_texts": [
+    "CréditMutuel",
+    "RELEVE D'IDENTITE BANCAIRE",
+    "Identifiant national de compte bancaire-RIB",
+    "Banque",
+    "Guichet",
+    "Numero de compte",
+    "Cle",
+    "Devise",
+    "Domiciliation",
+    "10278",
+    "00111",
+    "000200076803",
+    "44",
+    "EUR",
+    "CAISSEFEDERALEDECREDITMUTUEL",
+    "Identifiant international de compte bancaire",
+    "IBAN (International Bank Account Number)",
+    "BIC (Bank Identifier Code)",
+    "FR76",
+    "1027",
+    "8001",
+    "1100",
+    "0200",
+    "7680",
+    "344",
+    "CMCIFR2A",
+    "Domiciliation",
+    "Titulaire du compte (Account Owner)",
+    "CAISSEFEDERALEDECREDITMUTUEL",
+    "MLEMARIE-FRANCEDURAND",
+    "4RUERAFFEISEN",
+    "67RUEDECLICHY",
+    "67913STRASBOURGCEDEX9",
+    "12345MAVILLE",
+    "0388148814"
+  ],
+  "joined_text": "CréditMutuel RELEVE D'IDENTITE BANCAIRE Identifiant national de compte bancaire-RIB Banque Guichet Numero de compte Cle Devise Domiciliation 10278 00111 000200076803 44 EUR CAISSEFEDERALEDECREDITMUTUEL Identifiant international de compte bancaire IBAN (International Bank Account Number) BIC (Bank Identifier Code) FR76 1027 8001 1100 0200 7680 344 CMCIFR2A Domiciliation Titulaire du compte (Account Owner) CAISSEFEDERALEDECREDITMUTUEL MLEMARIE-FRANCEDURAND 4RUERAFFEISEN 67RUEDECLICHY 67913STRASBOURGCEDEX9 12345MAVILLE 0388148814",
+  "extracted_blocks": {
+    "document_type": {
+      "description": "Type de document",
+      "regex": "(Relev[ée]\\s+d[’']Identit[ée]\\s+Bancaire|RIB)",
+      "matched": true,
+      "full_match": "RELEVE D'IDENTITE BANCAIRE",
+      "groups": {
+        "1": "RELEVE D'IDENTITE BANCAIRE"
+      }
+    },
+    "bloc_intro_fr": {
+      "description": "Paragraphe explicatif en français",
+      "regex": "Ce relev[ée] est destin[ée] à [\\s\\S]+?\\(virements, paiements de quittances, etc\\.\\)",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_partie_reservee": {
+      "description": "Mention de la partie réservée au destinataire",
+      "regex": "Partie r[ée]serv[ée]e au destinataire du relev[ée]",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_intro_en": {
+      "description": "Paragraphe explicatif en anglais",
+      "regex": "This document is intended to be delivered[\\s\\S]+?invoice payments, etc\\.\\)",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_rib_national": {
+      "description": "Bloc identifiant national RIB",
+      "regex": "heuristic_rib_national",
+      "matched": true,
+      "full_match": "Identifiant national de compte bancaire-RIB Banque Guichet Numero de compte Cle Devise Domiciliation 10278 00111 000200076803 44 EUR CAISSEFEDERALEDECREDITMUTUEL",
+      "groups": {
+        "code_banque": "10278",
+        "code_guichet": "00111",
+        "cle_rib": "44",
+        "devise": "EUR",
+        "numero_compte": "000200076803",
+        "domiciliation": "CAISSEFEDERALEDECREDITMUTUEL",
+        "nom_banque": "CAISSEFEDERALEDECREDITMUTUEL"
+      }
+    },
+    "bloc_domiciliation": {
+      "description": "Bloc de domiciliation bancaire",
+      "regex": "heuristic_domiciliation",
+      "matched": true,
+      "full_match": "10278 00111 000200076803 44 EUR CAISSEFEDERALEDECREDITMUTUEL",
+      "groups": {
+        "domiciliation": "10278 00111 000200076803 44 EUR CAISSEFEDERALEDECREDITMUTUEL"
+      }
+    },
+    "bloc_iban": {
+      "description": "Bloc IBAN",
+      "regex": "heuristic_iban",
+      "matched": true,
+      "full_match": "FR7610278001110002007680344",
+      "groups": {
+        "iban_segment_1": "FR76",
+        "iban_segment_2": "1027",
+        "iban_segment_3": "8001",
+        "iban_segment_4": "1100",
+        "iban_segment_5": "0200",
+        "iban_segment_6": "7680",
+        "iban_segment_7": "344"
+      }
+    },
+    "bloc_bic": {
+      "description": "Bloc BIC / SWIFT",
+      "regex": "heuristic_bic",
+      "matched": true,
+      "full_match": "CMCIFR2A",
+      "groups": {
+        "bic_swift": "CMCIFR2A"
+      }
+    },
+    "bloc_titulaire_compte": {
+      "description": "Bloc titulaire du compte",
+      "regex": "heuristic_account_holder",
+      "matched": true,
+      "full_match": "CAISSEFEDERALEDECREDITMUTUEL MLEMARIE-FRANCEDURAND 4RUERAFFEISEN 67RUEDECLICHY 67913STRASBOURGCEDEX9 12345MAVILLE 0388148814",
+      "groups": {
+        "nom_titulaire": "CAISSEFEDERALEDECREDITMUTUEL",
+        "adresse_titulaire": "4RUERAFFEISEN",
+        "ville_titulaire": "67913STRASBOURGCEDEX9"
+      }
+    }
+  }
+}

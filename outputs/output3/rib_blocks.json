@@ -1,0 +1,103 @@
+{
+  "source_image": "documents/rib/rib2.png",
+  "ocr_result_file": "output3/rib_result.json",
+  "regex_config_file": "analyse/rib.json",
+  "rec_texts": [
+    "Releve d'identitéBancaire",
+    "Tioalaireducorpte:Prlnon+Noredutinlaireducomgto",
+    "Domiciliatienbancaire:NomdelbqannomdeTagmetnomdelave",
+    "Code Banquo",
+    "12345",
+    "Code Gaichet",
+    "02600",
+    "Numirode Compto",
+    "00123456709",
+    "Ci RIn",
+    "21",
+    "IAN",
+    "FR141234520600001234567892:1",
+    "BC/SWIr",
+    "CHLYFRPPXX",
+    "Western",
+    "Union"
+  ],
+  "joined_text": "Releve d'identitéBancaire Tioalaireducorpte:Prlnon+Noredutinlaireducomgto Domiciliatienbancaire:NomdelbqannomdeTagmetnomdelave Code Banquo 12345 Code Gaichet 02600 Numirode Compto 00123456709 Ci RIn 21 IAN FR141234520600001234567892:1 BC/SWIr CHLYFRPPXX Western Union",
+  "extracted_blocks": {
+    "document_type": {
+      "description": "Type de document",
+      "regex": "(Relev[ée]\\s+d[’']Identit[ée]\\s+Bancaire|RIB)",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_intro_fr": {
+      "description": "Paragraphe explicatif en français",
+      "regex": "Ce relev[ée] est destin[ée] à [\\s\\S]+?\\(virements, paiements de quittances, etc\\.\\)",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_partie_reservee": {
+      "description": "Mention de la partie réservée au destinataire",
+      "regex": "Partie r[ée]serv[ée]e au destinataire du relev[ée]",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_intro_en": {
+      "description": "Paragraphe explicatif en anglais",
+      "regex": "This document is intended to be delivered[\\s\\S]+?invoice payments, etc\\.\\)",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_rib_national": {
+      "description": "Bloc identifiant national RIB",
+      "regex": "heuristic_rib_national",
+      "matched": true,
+      "full_match": "Releve d'identitéBancaire Tioalaireducorpte:Prlnon+Noredutinlaireducomgto Domiciliatienbancaire:NomdelbqannomdeTagmetnomdelave Code Banquo 12345 Code Gaichet 02600 Numirode Compto 00123456709 Ci RIn 21 IAN FR141234520600001234567892:1 BC/SWIr CHLYFRPPXX Western Union",
+      "groups": {
+        "code_banque": "12345",
+        "code_guichet": "02600",
+        "cle_rib": "21",
+        "devise": "IAN",
+        "numero_compte": "00123456709",
+        "domiciliation": "Releve d'identitéBancaire Tioalaireducorpte:Prlnon+Noredutinlaireducomgto Domiciliatienbancaire:NomdelbqannomdeTagmetnomdelave Code Banquo Code Gaichet Numirode Compto Ci RIn FR141234520600001234567892:1 BC/SWIr CHLYFRPPXX Western Union",
+        "nom_banque": "FR141234520600001234567892:1"
+      }
+    },
+    "bloc_domiciliation": {
+      "description": "Bloc de domiciliation bancaire",
+      "regex": "heuristic_domiciliation",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_iban": {
+      "description": "Bloc IBAN",
+      "regex": "heuristic_iban",
+      "matched": false,
+      "full_match": null,
+      "groups": {}
+    },
+    "bloc_bic": {
+      "description": "Bloc BIC / SWIFT",
+      "regex": "heuristic_bic",
+      "matched": true,
+      "full_match": "CHLYFRPPXX",
+      "groups": {
+        "bic_swift": "CHLYFRPPXX"
+      }
+    },
+    "bloc_titulaire_compte": {
+      "description": "Bloc titulaire du compte",
+      "regex": "heuristic_account_holder",
+      "matched": true,
+      "full_match": "Releve d'identitéBancaire Tioalaireducorpte:Prlnon+Noredutinlaireducomgto Domiciliatienbancaire:NomdelbqannomdeTagmetnomdelave Code Banquo 12345 Code Gaichet 02600 Numirode Compto 00123456709 Ci RIn 21 IAN FR141234520600001234567892:1 BC/SWIr CHLYFRPPXX Western Union",
+      "groups": {
+        "nom_titulaire": "Releve d'identitéBancaire",
+        "adresse_titulaire": "12345"
+      }
+    }
+  }
+}

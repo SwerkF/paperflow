@@ -5,14 +5,34 @@ from pathlib import Path
 
 from flask import Flask, request, jsonify
 from paddleocr import PaddleOCR
-from ORCMethods import ORCMethods
+
+from python_classes.analyse_facture import AnalyzeFacture
+from python_classes.analyze_devis import AnalyzeDevis
+from python_classes.analyze_kbis import AnalyzeKBIS
+from python_classes.analyze_siret import AnalyzeSIRET
+from python_classes.analyze_urssaf import AnalyzeURSSAF
+from python_classes.analyze_rib import AnalyzeRIB
 
 os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 os.environ["FLAGS_use_mkldnn"] = "0"
 
 app = Flask(__name__)
 
-OCRMethodsInstance = ORCMethods(ocr=None)
+
+
+OUTPUT_DIR = Path(os.environ.get("PAPERFLOW_OUTPUT_DIR", "output4"))
+OCR_RESULT_PATH = OUTPUT_DIR / "rib_result.json"
+EXTRACTED_BLOCKS_PATH = OUTPUT_DIR / "rib_blocks.json"
+REGEX_CONFIG_PATH = Path("analyse")
+
+analyzers = {
+    "facture": AnalyzeFacture(REGEX_CONFIG_PATH / "facture.json"),
+    "devis": AnalyzeDevis(REGEX_CONFIG_PATH / "devis.json"),
+    "kbis": AnalyzeKBIS(REGEX_CONFIG_PATH / "kbis.json"),
+    "siret": AnalyzeSIRET(REGEX_CONFIG_PATH / "siret.json"),
+    "urssaf": AnalyzeURSSAF(REGEX_CONFIG_PATH / "urssaf.json"),
+    "rib": AnalyzeRIB(REGEX_CONFIG_PATH / "rib.json")
+}
 
 print("Chargement du modèle PaddleOCR...")
 ocr = PaddleOCR(
@@ -24,55 +44,49 @@ ocr = PaddleOCR(
 )
 print("Modèle chargé avec succès.")
 
-@app.route('/api/v1/analyze', methods=['POST'])
-def analyze_image():
+
+@app.route('/api/v1/analyze/<doc_type>', methods=['POST'])
+def analyze_document(doc_type):
+    if doc_type not in analyzers:
+        return jsonify({
+            "error": f"Type de document non supporté. Types valides : {list(analyzers.keys())}"
+        }), 400
+
+    # 2. Vérifier si la requête contient bien un fichier image
     if 'image' not in request.files:
-        return jsonify({"error": "Aucune image fournie dans la requête."}), 400
+        return jsonify({"error": "Aucune image fournie dans la requête (clé 'image' manquante)."}), 400
     
     file = request.files['image']
-    
     if file.filename == '':
         return jsonify({"error": "Aucun fichier sélectionné."}), 400
 
-    if file:
-        # Utilisation d'un dossier temporaire pour gérer les fichiers sans polluer le serveur
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir_path = Path(temp_dir)
+    # 3. Traitement dans un dossier temporaire propre
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_dir_path = Path(temp_dir)
+        image_path = temp_dir_path / file.filename
+        
+        # Sauvegarde temporaire de l'image
+        file.save(str(image_path))
+
+        try:
+            # 4. Appel magique à la bonne classe !
+            # Pas besoin de faire l'OCR manuellement, la méthode analyze() s'en charge.
+            analyzer = analyzers[doc_type]
+            extraction_result = analyzer.analyze(str(image_path))
+
+            # 5. Renvoi du résultat au client
+            return jsonify({
+                "status": "success",
+                "document_type": doc_type,
+                "data": extraction_result
+            }), 200
             
-            # Sauvegarder l'image reçue temporairement
-            image_path = temp_dir_path / file.filename
-            file.save(str(image_path))
-
-            try:
-                # Analyse de l'image
-                results = ocr.predict(input=str(image_path))
-                
-                json_results = []
-                for index, res in enumerate(results):
-                    # Sauvegarder le résultat temporairement pour le parser (comme dans le script original)
-                    result_path = temp_dir_path / f"result_{index}.json"
-                    res.save_to_json(str(result_path))
-
-                    # Lecture du fichier JSON généré
-                    with result_path.open("r", encoding="utf-8") as handle:
-                        json_results.append(json.load(handle))
-
-                if(json_results.type == 'Devis'):
-                    testDevisResult = OCRMethodsInstance.testDevis(json_results)
-                    print(testDevisResult)
-
-                # Renvoi du résultat avec un statut HTTP 200
-                return jsonify({
-                    "status": "success",
-                    "data": testDevisResult
-                }), 200
-                
-            except Exception as e:
-                # Gestion des erreurs liées à la prédiction
-                return jsonify({
-                    "status": "error",
-                    "message": str(e)
-                }), 500
+        except Exception as e:
+            # Gestion des erreurs
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=False)
