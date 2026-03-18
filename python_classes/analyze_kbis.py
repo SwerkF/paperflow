@@ -4,10 +4,12 @@ import re
 from pathlib import Path
 
 class AnalyzeKBIS:
-    def __init__(self, config_path: str | Path = "analyse/kbis.json"):
+    def __init__(self,ocr_model, config_path: str | Path = "analyse/kbis.json"):
         """Initialise l'analyseur d'Extrait KBIS avec son fichier de configuration."""
         self.config_path = Path(config_path)
-        
+
+        self.ocr_model = ocr_model
+
         with self.config_path.open("r", encoding="utf-8") as handle:
             self.config = json.load(handle)
 
@@ -59,7 +61,6 @@ class AnalyzeKBIS:
             },
         }
 
-        self.ocr_model = None
 
     @staticmethod
     def normalize_text(joined_text: str) -> str:
@@ -109,18 +110,6 @@ class AnalyzeKBIS:
 
     def analyze(self, image_path: str) -> dict:
         """Exécute l'OCR sur un extrait KBIS et extrait tous les blocs configurés."""
-
-        if self.ocr_model is None:
-            from paddleocr import PaddleOCR
-            os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-            os.environ["FLAGS_use_mkldnn"] = "0"
-            self.ocr_model = PaddleOCR(
-                use_doc_orientation_classify=False,
-                use_doc_unwarping=False,
-                use_textline_orientation=False,
-                device="cpu",
-                enable_mkldnn=False,
-            )
 
         results = self.ocr_model.predict(input=str(image_path))
         

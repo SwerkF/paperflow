@@ -1,0 +1,118 @@
+{
+    "data": {
+        "bloc_bancaire": {
+            "description": "Bloc d\u00e9tails bancaires",
+            "full_match": "NP Parlbas 13000 Marselle Telephone FR23 4112 4098 4098 23 FRHHCXX1001",
+            "groups": {
+                "bic_swift": "FRHHCXX1001",
+                "iban": "FR23 4112 4098 4098 23",
+                "nom_banque": "NP Parlbas 13000 Marselle Telephone"
+            },
+            "matched": true,
+            "regex": "heuristic_bank_details"
+        },
+        "bloc_client": {
+            "description": "Bloc client : nom + adresse + ville",
+            "full_match": "Michel Acheteur 31, rue de la Foret 13100 Aix-en-Provence Date : R\u00e9f\u00e9rence du devis : Date de validite : 2.6.2021 143 16.6.2021 Informations additionnelles: Service Apr\u00e8s Vente : Garantie 1 an.",
+            "groups": {
+                "adresse_client": "31, rue de la Foret",
+                "code_postal_ville_client": "13100 Aix-en-Provence",
+                "nom_client": "Michel Acheteur"
+            },
+            "matched": true,
+            "regex": "heuristic_client_segment"
+        },
+        "bloc_coordonnees_fournisseur": {
+            "description": "Bloc coordonn\u00e9es fournisseur en bas de page",
+            "full_match": "Coordonnees Detalls bancalres 22, Avenue Voltalre Plerre Fournisseur Banque NP Parlbas 13000 Marselle Telephone : +33 4 92 99 99 99 IBAN FR23 4112 4098 4098 23 N* SIren ou SIret : 1234567-8 E-mall : plerre@macompagnle.fr Blc/Swift FRHHCXX1001 NTVAIntra:FRXX999999999 wwww.macompagnle.com",
+            "groups": {
+                "email": "E-mall : plerre@macompagnle.fr",
+                "nom_contact": "Coordonnees",
+                "site_web": "macompagnle.fr",
+                "telephone": "Telephone : +33 4 92 99 99 99"
+            },
+            "matched": true,
+            "regex": "heuristic_supplier_coordinates"
+        },
+        "bloc_identifiants_entreprise": {
+            "description": "Bloc identifiants entreprise fournisseur",
+            "full_match": "TVA Total",
+            "groups": {
+                "tva_intra": "Total"
+            },
+            "matched": true,
+            "regex": "heuristic_company_identifiers"
+        },
+        "bloc_informations_additionnelles": {
+            "description": "Bloc informations additionnelles",
+            "full_match": "Service Apr\u00e8s Vente : Garantie 1 an.",
+            "groups": {
+                "texte_informations_additionnelles": "Service Apr\u00e8s Vente : Garantie 1 an."
+            },
+            "matched": true,
+            "regex": "heuristic_additional_info"
+        },
+        "bloc_infos_devis": {
+            "description": "Bloc des m\u00e9tadonn\u00e9es du devis",
+            "full_match": "Date : R\u00e9f\u00e9rence du devis : Date de validite : 2.6.2021 143 16.6.2021",
+            "groups": {
+                "date_devis": "2.6.2021",
+                "date_validite": "16.6.2021",
+                "reference_devis": "143"
+            },
+            "matched": true,
+            "regex": "Date\\s*:\\s+R[\u00e9e]f[\u00e9e]rence du devis\\s*:\\s+Date de validit[e\u00e9]\\s*:\\s+([0-9]{1,2}[./-][0-9]{1,2}[./-][0-9]{2,4})\\s+([^\\s]+)\\s+([0-9]{1,2}[./-][0-9]{1,2}[./-][0-9]{2,4})"
+        },
+        "bloc_signature": {
+            "description": "Bloc signature client",
+            "full_match": "Signature",
+            "groups": {
+                "mention_signature": "Signature"
+            },
+            "matched": true,
+            "regex": "heuristic_signature"
+        },
+        "bloc_tableau_lignes": {
+            "description": "Bloc du tableau des lignes de devis",
+            "full_match": "Main-d'ceuvre 5 h 60.00 \u20ac20% 60,00 \u20ac360,00\u20acProduit 10 pcs 105,00\u20ac20% 210,00 \u20ac1 260,00 \u20ac",
+            "groups": {
+                "contenu_lignes": "Main-d'ceuvre 5 h 60.00 \u20ac20% 60,00 \u20ac360,00\u20acProduit 10 pcs 105,00\u20ac20% 210,00 \u20ac1 260,00 \u20ac"
+            },
+            "matched": true,
+            "regex": "heuristic_table_lines"
+        },
+        "bloc_totaux": {
+            "description": "Bloc des totaux",
+            "full_match": "1 350,00 \u20ac270,00 \u20ac1 620,00 \u20ac",
+            "groups": {
+                "total_ht": "1 350,00 \u20ac",
+                "total_ttc": "1 620,00 \u20ac",
+                "total_tva": "270,00 \u20ac"
+            },
+            "matched": true,
+            "regex": "heuristic_totaux"
+        },
+        "bloc_vendeur": {
+            "description": "Bloc vendeur : titre + nom entreprise + adresse + ville",
+            "full_match": "Mon Entreprise 22, Avenue Voltaire 13000 Marseille",
+            "groups": {
+                "adresse": "22, Avenue Voltaire",
+                "code_postal_ville": "13000 Marseille",
+                "nom_entreprise": "Mon Entreprise"
+            },
+            "matched": true,
+            "regex": "heuristic_vendor_segment"
+        },
+        "document_type": {
+            "description": "Type de document",
+            "full_match": "Devis",
+            "groups": {
+                "1": "Devis"
+            },
+            "matched": true,
+            "regex": "(Devis|Facture|Avoir)"
+        }
+    },
+    "document_type": "devis",
+    "status": "success"
+}

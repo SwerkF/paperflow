@@ -4,9 +4,10 @@ import re
 from pathlib import Path
 
 class AnalyzeURSSAF:
-    def __init__(self, config_path: str | Path = "analyse/vigilance_urssaf.json"):
+    def __init__(self, ocr_model, config_path: str | Path = "analyse/vigilance_urssaf.json"):
         """Initialise l'analyseur d'attestation de vigilance URSSAF avec son fichier de configuration."""
         self.config_path = Path(config_path)
+        self.ocr_model = ocr_model
         
         with self.config_path.open("r", encoding="utf-8") as handle:
             self.config = json.load(handle)
@@ -43,7 +44,6 @@ class AnalyzeURSSAF:
             },
         }
 
-        self.ocr_model = None
 
     @staticmethod
     def normalize_text(joined_text: str) -> str:
@@ -104,18 +104,6 @@ class AnalyzeURSSAF:
 
     def analyze(self, image_path: str) -> dict:
         """Exécute l'OCR sur une attestation URSSAF et extrait tous les blocs."""
-        
-        if self.ocr_model is None:
-            from paddleocr import PaddleOCR
-            os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-            os.environ["FLAGS_use_mkldnn"] = "0"
-            self.ocr_model = PaddleOCR(
-                use_doc_orientation_classify=False,
-                use_doc_unwarping=False,
-                use_textline_orientation=False,
-                device="cpu",
-                enable_mkldnn=False,
-            )
 
         results = self.ocr_model.predict(input=str(image_path))
         

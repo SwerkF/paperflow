@@ -25,15 +25,6 @@ OCR_RESULT_PATH = OUTPUT_DIR / "rib_result.json"
 EXTRACTED_BLOCKS_PATH = OUTPUT_DIR / "rib_blocks.json"
 REGEX_CONFIG_PATH = Path("analyse")
 
-analyzers = {
-    "facture": AnalyzeFacture(REGEX_CONFIG_PATH / "facture.json"),
-    "devis": AnalyzeDevis(REGEX_CONFIG_PATH / "devis.json"),
-    "kbis": AnalyzeKBIS(REGEX_CONFIG_PATH / "kbis.json"),
-    "siret": AnalyzeSIRET(REGEX_CONFIG_PATH / "siret.json"),
-    "urssaf": AnalyzeURSSAF(REGEX_CONFIG_PATH / "urssaf.json"),
-    "rib": AnalyzeRIB(REGEX_CONFIG_PATH / "rib.json")
-}
-
 print("Chargement du modèle PaddleOCR...")
 ocr = PaddleOCR(
     use_doc_orientation_classify=False,
@@ -44,6 +35,14 @@ ocr = PaddleOCR(
 )
 print("Modèle chargé avec succès.")
 
+analyzers = {
+    "facture": AnalyzeFacture(ocr, REGEX_CONFIG_PATH / "facture.json"),
+    "devis": AnalyzeDevis(ocr, REGEX_CONFIG_PATH / "devis.json"),
+    "kbis": AnalyzeKBIS(ocr, REGEX_CONFIG_PATH / "kbis.json"),
+    "siret": AnalyzeSIRET(ocr, REGEX_CONFIG_PATH / "siret.json"),
+    "urssaf": AnalyzeURSSAF(ocr, REGEX_CONFIG_PATH / "urssaf.json"),
+    "rib": AnalyzeRIB(ocr, REGEX_CONFIG_PATH / "rib.json")
+}
 
 @app.route('/api/v1/analyze/<doc_type>', methods=['POST'])
 def analyze_document(doc_type):

@@ -3,12 +3,14 @@ import os
 import re
 import unicodedata
 from pathlib import Path
+import tempfile
 
 class AnalyzeFacture:
-    def __init__(self, config_path: str | Path = "analyse/facture.json"):
+    def __init__(self, ocr_model, config_path: str | Path = "analyse/facture.json"):
         """Initialise l'analyseur de Facture avec son fichier de configuration."""
         self.config_path = Path(config_path)
-        
+        self.ocr_model = ocr_model
+
         # Chargement de la configuration
         with self.config_path.open("r", encoding="utf-8") as handle:
             self.config = json.load(handle)
@@ -25,9 +27,6 @@ class AnalyzeFacture:
             r"^(SC|page \d+|NV-[0-9-]+|[0-9]{2}-[0-9]{2}-[0-9]{4}|t[ée]l[ée]phone|email|:contact@)",
             re.IGNORECASE,
         )
-
-        # Modèle OCR (Lazy)
-        self.ocr_model = None
 
     @staticmethod
     def normalize_text(text: str) -> str:
@@ -347,33 +346,46 @@ class AnalyzeFacture:
         )
 
     def analyze(self, image_path: str) -> dict:
-        """Exécute l'OCR sur une facture et extrait tous les blocs."""
-
-        if self.ocr_model is None:
-            from paddleocr import PaddleOCR
-            os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-            os.environ["FLAGS_use_mkldnn"] = "0"
-            self.ocr_model = PaddleOCR(
-                use_doc_orientation_classify=False,
-                use_doc_unwarping=False,
-                use_textline_orientation=False,
-                device="cpu",
-                enable_mkldnn=False,
-            )
-
         results = self.ocr_model.predict(input=str(image_path))
         
-
-        raw_texts = []
-        for page in results:
-            if not page: continue
-            for item in page:
-                raw_texts.append(item[1][0])
+        rec_texts = []
+        records = []
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir_path = Path(temp_dir)
+            
+            for index, res in enumerate(results):
+                result_path = temp_dir_path / f"temp_result_{index}.json"
+                res.save_to_json(str(result_path))
                 
-        rec_texts = [self.normalize_text(text) for text in raw_texts if self.normalize_text(text)]
-        joined_text = self.join_tokens(rec_texts)
+                with result_path.open("r", encoding="utf-8") as handle:
+                    page_data = json.load(handle)
+                    
+                page_texts = page_data.get("rec_texts", [])
+                page_boxes = page_data.get("rec_boxes", [])
+                
+                if isinstance(page_texts, list):
+                    for i, item in enumerate(page_texts):
+                        normalized = self.normalize_text(str(item))
+                        if not normalized:
+                            continue
+                        
+                        rec_texts.append(normalized)
+                        
+                        if isinstance(page_boxes, list) and i < len(page_boxes):
+                            box = page_boxes[i]
+                            if isinstance(box, list) and len(box) == 4:
+                                records.append({
+                                    "text": normalized,
+                                    "x1": float(box[0]),
+                                    "y1": float(box[1]),
+                                    "x2": float(box[2]),
+                                    "y2": float(box[3]),
+                                    "x_center": (float(box[0]) + float(box[2])) / 2,
+                                })
 
-        vendor_entry, client_entry = self._extract_client_and_vendor(rec_texts)
+        joined_text = self.join_tokens(rec_texts)
+        vendor_entry, client_entry = self._extract_vendor_and_client(rec_texts, records)
 
         return {
             "document_type": self._extract_document_type(joined_text),

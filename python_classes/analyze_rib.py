@@ -3,10 +3,12 @@ import os
 import re
 import unicodedata
 from pathlib import Path
+import tempfile
 
 class AnalyzeRIB:
-    def __init__(self, config_path: str | Path = "analyse/rib.json"):
+    def __init__(self, ocr_model, config_path: str | Path = "analyse/rib.json"):
         """Initialise l'analyseur de RIB avec son fichier de configuration."""
+        self.ocr_model = ocr_model
         self.config_path = Path(config_path)
         
         with self.config_path.open("r", encoding="utf-8") as handle:
@@ -16,8 +18,6 @@ class AnalyzeRIB:
         self.IBAN_RE = re.compile(r"[A-Z]{2}\d{2}[A-Z0-9]{11,30}", re.IGNORECASE)
         self.BIC_RE = re.compile(r"\b[A-Z0-9]{8,11}\b")
         self.POSTAL_CITY_RE = re.compile(r"\b\d{4,5}[A-Z ]{2,}|\b\d{5}\s+[A-Za-zÀ-ÿ-]+", re.IGNORECASE)
-        
-        self.ocr_model = None
 
     @staticmethod
     def normalize_text(text: str) -> str:
@@ -222,31 +222,44 @@ class AnalyzeRIB:
         )
 
     def analyze(self, image_path: str) -> dict:
-        """Exécute l'OCR sur une image et extrait tous les blocs du RIB."""
-
-        if self.ocr_model is None:
-            from paddleocr import PaddleOCR
-            os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-            os.environ["FLAGS_use_mkldnn"] = "0"
-            self.ocr_model = PaddleOCR(
-                use_doc_orientation_classify=False,
-                use_doc_unwarping=False,
-                use_textline_orientation=False,
-                device="cpu",
-                enable_mkldnn=False,
-            )
-
-        # Exec OCR
         results = self.ocr_model.predict(input=str(image_path))
         
-        # normalisation du txt
-        raw_texts = []
-        for page in results:
-            if not page: continue
-            for item in page:
-                raw_texts.append(item[1][0])
+        rec_texts = []
+        records = []
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir_path = Path(temp_dir)
+            
+            for index, res in enumerate(results):
+                result_path = temp_dir_path / f"temp_result_{index}.json"
+                res.save_to_json(str(result_path))
                 
-        rec_texts = [self.normalize_text(text) for text in raw_texts if self.normalize_text(text)]
+                with result_path.open("r", encoding="utf-8") as handle:
+                    page_data = json.load(handle)
+                    
+                page_texts = page_data.get("rec_texts", [])
+                page_boxes = page_data.get("rec_boxes", [])
+                
+                if isinstance(page_texts, list):
+                    for i, item in enumerate(page_texts):
+                        normalized = self.normalize_text(str(item))
+                        if not normalized:
+                            continue
+                        
+                        rec_texts.append(normalized)
+                        
+                        if isinstance(page_boxes, list) and i < len(page_boxes):
+                            box = page_boxes[i]
+                            if isinstance(box, list) and len(box) == 4:
+                                records.append({
+                                    "text": normalized,
+                                    "x1": float(box[0]),
+                                    "y1": float(box[1]),
+                                    "x2": float(box[2]),
+                                    "y2": float(box[3]),
+                                    "x_center": (float(box[0]) + float(box[2])) / 2,
+                                })
+
         joined_text = self.join_tokens(rec_texts)
 
         # extraction des différets blocs
