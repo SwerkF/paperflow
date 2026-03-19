@@ -6,7 +6,6 @@ from pathlib import Path
 from flask import Flask, request, jsonify
 from paddleocr import PaddleOCR
 
-# Imports de vos classes
 from python_classes.analyse_facture import AnalyzeFacture
 from python_classes.analyze_devis import AnalyzeDevis
 from python_classes.analyze_kbis import AnalyzeKBIS

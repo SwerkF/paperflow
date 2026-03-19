@@ -1,18 +1,13 @@
 import json
-import os
 import re
 import unicodedata
 from pathlib import Path
-import tempfile
-import base64
-import numpy as np
-import cv2
+
 
 class AnalyzeDevis:
-    def __init__(self, ocr_model, config_path: str | Path = "analyse/devis.json"):
+    def __init__(self, config_path: str | Path = "analyse/devis.json"):
         """Initialise l'analyseur de Devis avec son fichier de configuration."""
         self.config_path = Path(config_path)
-        self.ocr_model = ocr_model
         
         with self.config_path.open("r", encoding="utf-8") as handle:
             self.config = json.load(handle)
@@ -442,71 +437,6 @@ class AnalyzeDevis:
                 "tva_intra": tva_match.group(1) if tva_match else "",
             },
         )
-    
-    def analyze_base64(self, base64_string: str) -> dict:
-        if "," in base64_string:
-            base64_string = base64_string.split(",")[1]
-
-        img_bytes = base64.b64decode(base64_string)
-
-        np_array = np.frombuffer(img_bytes, np.uint8)
-
-        img_cv2 = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
-
-        results = self.ocr_model.predict(input=img_cv2)
-
-        rec_texts = []
-        records = []
-        
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir_path = Path(temp_dir)
-            
-            for index, res in enumerate(results):
-                result_path = temp_dir_path / f"temp_result_{index}.json"
-                res.save_to_json(str(result_path))
-                
-                with result_path.open("r", encoding="utf-8") as handle:
-                    page_data = json.load(handle)
-                    
-                page_texts = page_data.get("rec_texts", [])
-                page_boxes = page_data.get("rec_boxes", [])
-                
-                if isinstance(page_texts, list):
-                    for i, item in enumerate(page_texts):
-                        normalized = self.normalize_text(str(item))
-                        if not normalized:
-                            continue
-                        
-                        rec_texts.append(normalized)
-                        
-                        if isinstance(page_boxes, list) and i < len(page_boxes):
-                            box = page_boxes[i]
-                            if isinstance(box, list) and len(box) == 4:
-                                records.append({
-                                    "text": normalized,
-                                    "x1": float(box[0]),
-                                    "y1": float(box[1]),
-                                    "x2": float(box[2]),
-                                    "y2": float(box[3]),
-                                    "x_center": (float(box[0]) + float(box[2])) / 2,
-                                })
-
-        joined_text = self.join_tokens(rec_texts)
-        vendor_entry, client_entry = self._extract_vendor_and_client(rec_texts, records)
-
-        return {
-            "document_type": self._extract_document_type(joined_text),
-            "bloc_vendeur": vendor_entry,
-            "bloc_client": client_entry,
-            "bloc_infos_devis": self._extract_infos_devis(rec_texts, joined_text),
-            "bloc_informations_additionnelles": self._extract_informations_additionnelles(rec_texts),
-            "bloc_tableau_lignes": self._extract_tableau_lignes(rec_texts),
-            "bloc_totaux": self._extract_totaux(rec_texts, joined_text),
-            "bloc_signature": self._extract_signature(joined_text),
-            "bloc_coordonnees_fournisseur": self._extract_coordonnees_fournisseur(rec_texts, joined_text),
-            "bloc_bancaire": self._extract_bancaire(joined_text),
-            "bloc_identifiants_entreprise": self._extract_identifiants_entreprise(joined_text),
-        }
 
     def analyze_from_data(self, raw_rec_texts: list[str], raw_records: list[dict]) -> dict:
         rec_texts = []

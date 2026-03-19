@@ -1,20 +1,13 @@
 import json
-import os
 import re
 import unicodedata
-import tempfile
 from pathlib import Path
-import base64
-import numpy as np
-import cv2
 
 class AnalyzeFacture:
-    def __init__(self, ocr_model, config_path: str | Path = "analyse/facture_simple.json"):
+    def __init__(self, config_path: str | Path = "analyse/facture_simple.json"):
         """Initialise l'analyseur de Facture avec son fichier de configuration."""
         self.config_path = Path(config_path)
-        self.ocr_model = ocr_model
         
-        # Chargement de la configuration
         with self.config_path.open("r", encoding="utf-8") as handle:
             self.config = json.load(handle)
 
@@ -344,53 +337,6 @@ class AnalyzeFacture:
                 "tva_intracom": tva,
             },
         )
-    
-    def analyze_base64(self, base64_string: str) -> dict:
-        if "," in base64_string:
-            base64_string = base64_string.split(",")[1]
-
-        img_bytes = base64.b64decode(base64_string)
-
-        np_array = np.frombuffer(img_bytes, np.uint8)
-
-        img_cv2 = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
-
-        results = self.ocr_model.predict(input=img_cv2)
-
-        rec_texts = []
-        with tempfile.TemporaryDirectory() as temp_dir:
-            
-            temp_dir_path = Path(temp_dir)
-            
-            for index, res in enumerate(results):
-                result_path = temp_dir_path / f"temp_result_{index}.json"
-                res.save_to_json(str(result_path))
-                
-                with result_path.open("r", encoding="utf-8") as handle:
-                    page_data = json.load(handle)
-                    
-                page_texts = page_data.get("rec_texts", [])
-                
-                if isinstance(page_texts, list):
-                    for item in page_texts:
-                        normalized = self.normalize_text(str(item))
-                        if normalized:
-                            rec_texts.append(normalized)
-
-        joined_text = self.join_tokens(rec_texts)
-
-        vendor_entry, client_entry = self._extract_client_and_vendor(rec_texts)
-
-        return {
-            "document_type": self._extract_document_type(joined_text),
-            "bloc_vendeur": vendor_entry,
-            "bloc_client": client_entry,
-            "bloc_infos_facture": self._extract_infos_facture(joined_text),
-            "bloc_lignes_facture": self._extract_lignes_facture(rec_texts),
-            "bloc_totaux_tva": self._extract_totaux_tva(joined_text),
-            "bloc_conditions_paiement": self._extract_conditions_paiement(joined_text),
-            "bloc_signature_coordonnees": self._extract_signature_coordonnees(rec_texts),
-        }
 
 
     def analyze_from_data(self, raw_rec_texts: list[str], raw_records: list[dict] = None) -> dict:
