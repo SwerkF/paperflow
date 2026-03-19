@@ -6,7 +6,7 @@ import base64
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form, BackgroundTasks
 
 from app.database import bronze_collection, silver_collection
-from app.models.bronze import BronzeDocument, BronzeResponse
+from app.models.bronze import BronzeDocument, BronzeResponse, DocumentType
 from app.services.processor import process_ocr
 
 router = APIRouter(prefix="/upload", tags=["Upload"])
@@ -17,6 +17,7 @@ async def upload_documents(
     files: List[UploadFile] = File(...),
     dossierId: int = Form(...),
     entrepriseId: int = Form(...),
+    document_type: DocumentType = Form(DocumentType.autre),  # ← ajouté
     background_tasks: BackgroundTasks = None
 ):
     allowed_types = ["application/pdf", "image/jpeg", "image/png"]
@@ -59,6 +60,7 @@ async def upload_documents(
             sha256_hash=sha256,
             dossierId=dossierId,
             entrepriseId=entrepriseId,
+            document_type=document_type,  # ← ajouté
         )
 
         # 7. Insert Bronze
@@ -68,7 +70,7 @@ async def upload_documents(
         await silver_collection.insert_one({
             "bronze_id": str(result.inserted_id),
             "filename": file.filename,
-            "document_type": None,
+            "document_type": document_type.value,  # ← ajouté
             "ocr_text": None,
             "extracted_fields": {},
             "ocr_confidence": None,
@@ -97,6 +99,7 @@ async def upload_documents(
                 sha256_hash=sha256,
                 dossierId=dossierId,
                 entrepriseId=entrepriseId,
+                document_type=document_type,  # ← ajouté
                 uploaded_at=doc.uploaded_at,
                 status=doc.status
             ).model_dump()
