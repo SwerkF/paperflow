@@ -43,6 +43,7 @@ ocr_model = PaddleOCR(
 )
 print("API prête !")
 
+# Extration des donnée de l'OCR 
 def extract_raw_ocr_data(image_path: str):
     """Exécute l'OCR et extrait les données brutes."""
     results = ocr_model.predict(input=str(image_path))
@@ -77,6 +78,8 @@ def extract_raw_ocr_data(image_path: str):
                             })
     return raw_rec_texts, raw_records
 
+
+# Utilisation d'extract_raw pour détaerminer le type de document
 def detect_document_type(raw_rec_texts: list[str]) -> str:
     """Analyse les mots clés du document pour déduire so type."""
     text = " ".join(raw_rec_texts).lower()
@@ -102,6 +105,7 @@ def analyze_document():
         temp_dir_path = Path(temp_dir)
         image_path = None
 
+        # Assurer que la requête contient le fichier en base64
         if request.is_json:
             data = request.get_json()
             if 'image_base64' not in data:
