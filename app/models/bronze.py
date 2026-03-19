@@ -15,8 +15,8 @@ class BronzeDocument(BaseModel):
     file_data: str
     file_size: int
     sha256_hash: str
-    dossierId: int
-    entrepriseId: int
+    dossierId: str
+    entrepriseId: str
     uploaded_at: datetime = Field(default_factory=datetime.utcnow)
     status: BronzeStatus = BronzeStatus.pending
 
@@ -24,7 +24,7 @@ class BronzeResponse(BaseModel):
     id: str
     filename: str
     sha256_hash: str
-    dossierId: int
-    entrepriseId: int
+    dossierId: str
+    entrepriseId: str
     uploaded_at: datetime
     status: BronzeStatus

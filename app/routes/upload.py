@@ -15,8 +15,8 @@ router = APIRouter(prefix="/upload", tags=["Upload"])
 @router.post("/")
 async def upload_documents(
     files: List[UploadFile] = File(...),
-    dossierId: int = Form(...),
-    entrepriseId: int = Form(...),
+    dossierId: str = Form(...),
+    entrepriseId: str = Form(...),
     background_tasks: BackgroundTasks = None
 ):
     allowed_types = ["application/pdf", "image/jpeg", "image/png"]
