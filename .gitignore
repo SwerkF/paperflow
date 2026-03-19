@@ -1,51 +1,5 @@
-# Python
+.env
+docker-compose.yml
 __pycache__/
-*.py[cod]
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
-MANIFEST
-.coverage
-.tox/
-.mypy_cache/
+*.pyc
 .pytest_cache/
-*.pyo
-*.pyd
-*.db
-*.sqlite3
-*.log
-
-# Virtual environment
-env/
-.venv/
-venv/
-ENV/
-env.bak/
-
-# Jupyter
-.ipynb_checkpoints
-
-# Editor
-.vscode/
-*.swp
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Other
-.idea/
-.cache/
-*.orig
-
-# Project
-.cursor/
-AGENTS.md
-LICENSE
-CONTRIBUTING.md
-CONTRIBUTORS.md
-CONTRIBUTORS.md
