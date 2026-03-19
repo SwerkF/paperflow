@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.database import entreprises_collection
+from app.database import entreprises_collection, dossiers_collection
 from app.models.entreprise import EntrepriseCreate, EntrepriseDocument, EntrepriseResponse
 from datetime import datetime
 from bson import ObjectId
@@ -74,3 +74,42 @@ async def get_entreprise_by_siren(siren: str):
         id=str(entreprise["_id"]),
         **{k: v for k, v in entreprise.items() if k != "_id"}
     )
+
+
+# ── Ajouter un dossier à une entreprise ──
+@router.post("/{entreprise_id}/dossiers/{dossier_id}")
+async def add_dossier_to_entreprise(entreprise_id: str, dossier_id: str):
+    entreprise = await entreprises_collection.find_one({"_id": ObjectId(entreprise_id)})
+    if not entreprise:
+        raise HTTPException(status_code=404, detail="Entreprise introuvable")
+
+    dossier = await dossiers_collection.find_one({"_id": ObjectId(dossier_id)})
+    if not dossier:
+        raise HTTPException(status_code=404, detail="Dossier introuvable")
+
+    await entreprises_collection.update_one(
+        {"_id": ObjectId(entreprise_id)},
+        {
+            "$addToSet": {"dossiers_ids": dossier_id},
+            "$set": {"updated_at": datetime.utcnow()}
+        }
+    )
+    return {"message": "Dossier ajouté à l'entreprise"}
+
+
+# ── Récupérer tous les dossiers d'une entreprise ──
+@router.get("/{entreprise_id}/dossiers")
+async def get_dossiers_entreprise(entreprise_id: str):
+    entreprise = await entreprises_collection.find_one({"_id": ObjectId(entreprise_id)})
+    if not entreprise:
+        raise HTTPException(status_code=404, detail="Entreprise introuvable")
+
+    dossiers_ids = entreprise.get("dossiers_ids", [])
+    dossiers = await dossiers_collection.find(
+        {"_id": {"$in": [ObjectId(d) for d in dossiers_ids]}}
+    ).to_list(100)
+
+    return [
+        {"id": str(d["_id"]), **{k: v for k, v in d.items() if k != "_id"}}
+        for d in dossiers
+    ]
