@@ -6,87 +6,91 @@
       "type": "devis",
       "description": "Documents de devis / quotation",
       "regexes": [
-        "\\bDEVIS\\b",
-        "\\bDevis\\b",
-        "R[ée]f[ée]rence du devis",
-        "Date de validit[eé]",
-        "Signature du client",
-        "bon pour accord",
-        "Destinataire",
-        "A l'attention de\\s*:?",
-        "Code Client\\s*:?",
-        "Devis valable"
+        "(?i)\\bdevis\\b",
+        "(?i)r[ée]f[ée]rence\\s+du\\s+devis",
+        "(?i)date\\s+de\\s+validit[ée]",
+        "(?i)signature\\s+du\\s+client",
+        "(?i)bon\\s+pour\\s+accord",
+        "(?i)destinataire",
+        "(?i)a\\s+l['’ ]attention\\s+de\\s*:?",
+        "(?i)code\\s+client\\s*:?",
+        "(?i)devis\\s+valable",
+        "(?i)r[ée]capitulatif\\s+de\\s+devis"
       ]
     },
     {
       "type": "facture",
       "description": "Documents de facture / invoice",
       "regexes": [
-        "\\bFACTURE\\b",
-        "\\bFacture\\b",
-        "Num[ée]ro de facture",
-        "Date de facture",
-        "N\\.?\\s*client",
-        "Mode de pai?ement",
-        "Conditions de paiement",
-        "Total HT",
-        "Total TTC"
+        "(?i)\\bfacture\\b",
+        "(?i)num[ée]ro\\s+de\\s+facture",
+        "(?i)date\\s+de\\s+facture",
+        "(?i)n\\.?\\s*client",
+        "(?i)mode\\s+de\\s+pai?ement",
+        "(?i)conditions\\s+de\\s+paiement",
+        "(?i)total\\s+ht",
+        "(?i)total\\s+tva",
+        "(?i)total\\s+ttc",
+        "(?i)invoice\\s+number"
       ]
     },
     {
       "type": "kbis",
       "description": "Extrait Kbis / registre du commerce",
       "regexes": [
-        "\\bKBIS\\b",
-        "\\bKbis\\b",
-        "Greffe du Tribunal de Commerce",
-        "IDENTIFICATION DE LA PERSONNE MORALE",
-        "Immatriculation au RCS",
-        "Dénomination ou raison sociale",
-        "GESTION, DIRECTION",
-        "Le Greffier"
+        "(?i)\\bkbis\\b",
+        "(?i)greffe\\s+du\\s+tribunal\\s+de\\s+commerce",
+        "(?i)identification\\s+de\\s+la\\s+personne\\s+morale",
+        "(?i)immatriculation\\s+au\\s+rcs",
+        "(?i)d[ée]nomination\\s+ou\\s+raison\\s+sociale",
+        "(?i)gestion\\s*,?\\s*direction",
+        "(?i)le\\s+greffier",
+        "(?i)extrait\\s+k\\s*bis"
       ]
     },
     {
       "type": "rib",
       "description": "Releve d'identite bancaire",
       "regexes": [
-        "Relev[ée]\\s+d[’']?identit[ée]\\s+bancaire",
-        "RELEVE\\s+D[’']IDENTITE\\s+BANCAIRE",
-        "Identifiant national de compte bancaire\\s*-?\\s*RIB",
-        "\\bRIB\\b",
-        "\\bIBAN\\b",
-        "\\bBIC\\b",
-        "Titulaire du compte",
-        "Code Banque",
-        "Code Guichet",
-        "Cl[ée]\\s+RIB"
+        "(?i)relev[ée]\\s+d[’']?identit[ée]\\s+bancaire",
+        "(?i)identifiant\\s+national\\s+de\\s+compte\\s+bancaire\\s*[-–]?\\s*rib",
+        "(?i)\\brib\\b",
+        "(?i)\\biban\\b",
+        "(?i)\\bbic(?:/swift)?\\b",
+        "(?i)titulaire\\s+du\\s+compte",
+        "(?i)code\\s+banque",
+        "(?i)code\\s+guichet",
+        "(?i)cl[ée]\\s+rib",
+        "(?i)bank\\s+identifier\\s+code"
       ]
     },
     {
       "type": "attestation_siret",
       "description": "Attestation d'immatriculation au RNE / SIRET",
       "regexes": [
-        "ATTESTATION D['’]IMMATRICULATION AU REGISTRE NATIONAL DES ENTREPRISES",
-        "\\bREGISTRE NATIONAL DES ENTREPRISES\\b",
-        "Identit[ée] de l'entreprise",
-        "SIREN \\(si[èe]ge\\)",
-        "Date d'immatriculation au RNE",
-        "Adresse du si[èe]ge",
-        "\\bSiret\\b"
+        "(?i)attestation\\s+d['’]immatriculation\\s+au\\s+registre\\s+national\\s+des\\s+entreprises",
+        "(?i)registre\\s+national\\s+des\\s+entreprises",
+        "(?i)identit[ée]\\s+de\\s+l['’]entreprise",
+        "(?i)siren\\s*\\(\\s*si[èe]ge\\s*\\)",
+        "(?i)date\\s+d['’]immatriculation\\s+au\\s+rne",
+        "(?i)adresse\\s+du\\s+si[èe]ge",
+        "(?i)forme\\s+juridique",
+        "(?i)capital\\s+social",
+        "(?i)\\bsiret\\b"
       ]
     },
     {
       "type": "attestation_vigilance_urssaf",
       "description": "Attestation de vigilance URSSAF",
       "regexes": [
-        "\\bUrssaf\\b",
-        "Au service de notre protection sociale",
-        "Article\\s*L?\\.?243-15",
-        "CODE DE SECURITE",
-        "cotisations et contributions sociales",
-        "authenticit[ée] de cette attestation",
-        "Le Directeur"
+        "(?i)\\burssaf\\b",
+        "(?i)au\\s+service\\s+de\\s+notre\\s+protection\\s+sociale",
+        "(?i)article\\s*l?\\.?\\s*243-15",
+        "(?i)code\\s+de\\s+s[ée]curit[ée]",
+        "(?i)cotisations\\s+et\\s+contributions\\s+sociales",
+        "(?i)authenticit[ée]\\s+de\\s+cette\\s+attestation",
+        "(?i)le\\s+directeur",
+        "(?i)attestation\\s+de\\s+vigilance"
       ]
     }
   ]
