@@ -1,0 +1,167 @@
+{
+  "document_type": {
+    "description": "Type de document",
+    "regex": "(Devis|Facture|Avoir)",
+    "example_match": "Devis"
+  },
+  "bloc_vendeur": {
+    "description": "Bloc vendeur : titre + nom entreprise + adresse + ville",
+    "regex": "Vendeur\\s+(.+?)\\s+(\\d{1,4},\\s+.+?)\\s+(\\d{5}\\s+.+?)\\s+Client",
+    "groups": {
+      "1": "nom_entreprise",
+      "2": "adresse",
+      "3": "code_postal_ville"
+    },
+    "example_match": [
+      "Mon Entreprise",
+      "22, Avenue Voltaire",
+      "13000 Marseille"
+    ]
+  },
+  "bloc_client": {
+    "description": "Bloc client : nom + adresse + ville",
+    "regex": "Client\\s+(.+?)\\s+(\\d{1,4},\\s+.+?)\\s+(\\d{5}\\s+.+?)\\s+Date\\s*:",
+    "groups": {
+      "1": "nom_client",
+      "2": "adresse_client",
+      "3": "code_postal_ville_client"
+    },
+    "example_match": [
+      "Michel Acheteur",
+      "31, rue de la Forêt",
+      "13100 Aix-en-Provence"
+    ]
+  },
+  "bloc_infos_devis": {
+    "description": "Bloc des métadonnées du devis",
+    "regex": "Date\\s*:\\s+R[ée]f[ée]rence du devis\\s*:\\s+Date de validit[eé]\\s*:\\s+([0-9]{1,2}[./-][0-9]{1,2}[./-][0-9]{2,4})\\s+([^\\s]+)\\s+([0-9]{1,2}[./-][0-9]{1,2}[./-][0-9]{2,4})",
+    "groups": {
+      "1": "date_devis",
+      "2": "reference_devis",
+      "3": "date_validite"
+    },
+    "example_match": [
+      "2.6.2021",
+      "143",
+      "16.6.2021"
+    ]
+  },
+  "bloc_informations_additionnelles": {
+    "description": "Bloc informations additionnelles",
+    "regex": "Informations additionnelles\\s*:?\\s+(.+?)\\s+Description\\s+Quantit[eé]",
+    "groups": {
+      "1": "texte_informations_additionnelles"
+    },
+    "example_match": [
+      "Service Après Vente : Garantie 1 an."
+    ]
+  },
+  "bloc_tableau_lignes": {
+    "description": "Bloc du tableau des lignes de devis",
+    "regex": "Description\\s+Quantit[eé]\\s+Unit[eé]\\s+Prix unitaire HT\\s+% TVA\\s+Total TVA\\s+Total TTC\\s+([\\s\\S]+?)\\s+Total HT",
+    "groups": {
+      "1": "contenu_lignes"
+    },
+    "example_match": [
+      "Main-d'œuvre 5 h 60,00 € 20 % 60,00 € 360,00 € Produit 10 pcs 105,00 € 20 % 210,00 € 1 260,00 €"
+    ]
+  },
+  "bloc_totaux": {
+    "description": "Bloc des totaux",
+    "regex": "Total HT\\s+([0-9 ]+[.,][0-9]{2}\\s*€?)\\s+Total TVA\\s+([0-9 ]+[.,][0-9]{2}\\s*€?)\\s+Total TTC\\s+([0-9 ]+[.,][0-9]{2}\\s*€?)\\s+Signature du client",
+    "groups": {
+      "1": "total_ht",
+      "2": "total_tva",
+      "3": "total_ttc"
+    },
+    "example_match": [
+      "1 350,00 €",
+      "270,00 €",
+      "1 620,00 €"
+    ]
+  },
+  "bloc_signature": {
+    "description": "Bloc signature client",
+    "regex": "Signature du client\\s*\\(([^)]+)\\)",
+    "groups": {
+      "1": "mention_signature"
+    },
+    "example_match": [
+      "précédée de la mention « Bon pour accord »"
+    ]
+  },
+  "bloc_coordonnees_fournisseur": {
+    "description": "Bloc coordonnées fournisseur en bas de page",
+    "regex": "Coordonnees\\s+Detalls bancalres\\s+\\d{1,4},\\s+.+?\\s+([A-Z][^\\s]+\\s+[A-Z][^\\s]+)\\s+Banque\\s+.+?\\s+\\d{5}\\s+.+?\\s+Telephone\\s*:\\s*(\\+?[0-9][0-9 ]{7,20})\\s+IBAN\\s+.+?\\s+N.?\\s*S[Ii]ren ou S[Ii]ret\\s*:\\s+.+?\\s+E[- ]?m[a-z]+\\s*:\\s*([^\\s]+)\\s+Blc\\/Swift\\s+.+?\\s+N\\s*TVA\\s*Intra[:：]?\\s*.+?\\s+(w{3,4}\\.?\\S+)",
+    "groups": {
+      "1": "nom_contact",
+      "2": "telephone",
+      "3": "email",
+      "4": "site_web"
+    },
+    "example_match": [
+      "Plerre Fournisseur",
+      "+33 4 92 99 99 99",
+      "plerre@macompagnle.fr",
+      "wwww.macompagnle.com"
+    ]
+  },
+  "bloc_bancaire": {
+    "description": "Bloc détails bancaires",
+    "regex": "Banque\\s+(.+?)\\s+\\d{5}\\s+.+?\\s+Telephone\\s*:\\s*\\+?[0-9][0-9 ]{7,20}\\s+IBAN\\s+([A-Z]{2}[0-9A-Z ]{10,34})\\s+N.?\\s*S[Ii]ren ou S[Ii]ret\\s*:\\s+[0-9-]+\\s+E[- ]?m[a-z]+\\s*:\\s*[^\\s]+\\s+Blc\\/Swift\\s+([A-Z0-9]{8,11})",
+    "groups": {
+      "1": "nom_banque",
+      "2": "iban",
+      "3": "bic_swift"
+    },
+    "example_match": [
+      "NP Parlbas",
+      "FR23 4112 4098 4098 23",
+      "FRHHCXX1001"
+    ]
+  },
+  "bloc_identifiants_entreprise": {
+    "description": "Bloc identifiants entreprise fournisseur",
+    "regex": "N.?\\s*S[Ii]ren ou S[Ii]ret\\s*:?\\s*([0-9-]+)\\s+E[- ]?m[a-z]+\\s*:\\s*[^\\s]+\\s+Blc\\/Swift\\s+[A-Z0-9]{8,11}\\s+N\\s*TVA\\s*Intra[:：]?\\s*([A-Z0-9]+)",
+    "groups": {
+      "1": "siren_ou_siret",
+      "2": "tva_intra"
+    },
+    "example_match": [
+      "1234567-8",
+      "FRXX999999999"
+    ]
+  },
+  "blocs_unitaires_utiles": {
+    "date": {
+      "description": "Date simple",
+      "regex": "([0-9]{1,2}[./-][0-9]{1,2}[./-][0-9]{2,4})",
+      "example_match": "16.6.2021"
+    },
+    "montant": {
+      "description": "Montant avec ou sans euro",
+      "regex": "([0-9 ]+[.,][0-9]{2}\\s*€?)",
+      "example_match": "1 350,00 €"
+    },
+    "telephone": {
+      "description": "Téléphone",
+      "regex": "(\\+?[0-9][0-9 ]{7,20})",
+      "example_match": "+33 4 92 99 99 99"
+    },
+    "email": {
+      "description": "Email",
+      "regex": "([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})",
+      "example_match": "pierre@macompagnie.fr"
+    },
+    "iban": {
+      "description": "IBAN",
+      "regex": "([A-Z]{2}[0-9A-Z ]{10,34})",
+      "example_match": "FR23 4112 4098 4098 23"
+    },
+    "bic_swift": {
+      "description": "BIC / SWIFT",
+      "regex": "([A-Z0-9]{8,11})",
+      "example_match": "FRHHCXX1001"
+    }
+  }
+}

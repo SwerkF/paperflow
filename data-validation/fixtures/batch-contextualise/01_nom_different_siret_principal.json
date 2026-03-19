@@ -1,0 +1,31 @@
+{
+  "contexte_utilisateur": {
+    "entreprise_id": "ENT-999",
+    "nom_principal": "MaSuperBoite SAS",
+    "siret_principal": "73282932000074"
+  },
+  "documents": [
+    {
+      "id": "FAC-002",
+      "document_type": { "full_match": "FACTURE", "groups": { "1": "FACTURE" } },
+      "bloc_signature_coordonnees": {
+        "groups": {
+          "nom_societe": "MA SUPER BOITE S.A.S.",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_client": {
+        "groups": {
+          "societe_client": "MaSuperBoite SAS",
+          "siret": "73282932000074"
+        }
+      },
+      "bloc_totaux_tva": {
+        "groups": {
+          "total_ht": "250,00 €",
+          "total_ttc": "300,00 €"
+        }
+      }
+    }
+  ]
+}

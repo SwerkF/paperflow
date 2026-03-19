@@ -1,0 +1,43 @@
+{
+  "contexte_utilisateur": {
+    "entreprise_id": "ENT-999",
+    "nom_principal": "MaSuperBoite SAS",
+    "siret_principal": "73282932000074"
+  },
+  "documents": [
+    {
+      "id": "URS-005A",
+      "document_type": {
+        "full_match": "Attestation de fourniture des déclarations sociales et paiement des cotisations et contributions sociales",
+        "groups": {
+          "1": "Attestation de fourniture des déclarations sociales et paiement des cotisations et contributions sociales"
+        }
+      },
+      "bloc_date_destinataire": {
+        "groups": {
+          "raison_sociale": "MaSuperBoite SAS",
+          "date_document": "01/01/2020"
+        }
+      },
+      "bloc_emetteur": {
+        "groups": {
+          "siren_urssaf": "510395239"
+        }
+      }
+    },
+    {
+      "id": "URS-005B",
+      "document_type": { "full_match": "Urssaf", "groups": { "1": "Urssaf" } },
+      "bloc_date_destinataire": {
+        "groups": {
+          "raison_sociale": "MaSuperBoite SAS"
+        }
+      },
+      "bloc_emetteur": {
+        "groups": {
+          "siret_urssaf": "7328293200007"
+        }
+      }
+    }
+  ]
+}
