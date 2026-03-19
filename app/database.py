@@ -21,9 +21,11 @@ client = AsyncIOMotorClient(
 db = client[DB_NAME]
 
 users_collection = db["users"]
+entreprises_collection = db["entreprises"]
+dossiers_collection = db["dossiers"]
 bronze_collection = db["bronze"]
 silver_collection = db["silver"]
-gold_collection   = db["gold"]
+gold_collection = db["gold"]
 
 # Test de connexion
 async def ping_db():

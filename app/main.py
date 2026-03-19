@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.database import ping_db
-from app.routes import upload, storage, users
+from app.routes import upload, storage
+from app.routes import users
+from app.routes import entreprises
+from app.routes import dossiers
 from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
@@ -32,6 +35,8 @@ app.add_middleware(
 app.include_router(upload.router)
 app.include_router(storage.router)
 app.include_router(users.router)
+app.include_router(entreprises.router)
+app.include_router(dossiers.router)
 
 # Route test pour vérifier que l'API fonctionne
 @app.get("/")
