@@ -19,6 +19,8 @@ client = AsyncIOMotorClient(
 
 # Base et collections
 db = client[DB_NAME]
+
+users_collection = db["users"]
 bronze_collection = db["bronze"]
 silver_collection = db["silver"]
 gold_collection   = db["gold"]
