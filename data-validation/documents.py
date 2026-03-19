@@ -34,14 +34,15 @@ def process_documents_batch():
     if not isinstance(documents, list):
         return jsonify({"erreur": "Format invalide. 'documents' doit être un tableau."}), 400
 
-    alertes = validator.validate_documents(contexte_utilisateur, documents)
+    alertes, contextes_verifies = validator.validate_documents(contexte_utilisateur, documents)
 
     reponse = {
         "code": 200,
         "statut": "success",
         "documents_traites": len(documents),
         "anomalies_detectees": len(alertes),
-        "details_alertes": alertes
+        "details_alertes": alertes,
+        "contextes_verifies": contextes_verifies
     }
 
     return jsonify(reponse), 200

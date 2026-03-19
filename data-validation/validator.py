@@ -111,12 +111,18 @@ class ServiceValidation:
         extracted_digits = "".join(_REGEX_DIGITS.findall(str(value)))
         return extracted_digits or None
 
-    def _extract_siret(self, value) -> str | None:
+    def _extract_siret(self, value, allow_siren=False) -> str | None:
         """
-        Retourne un SIRET uniquement s'il a strictement 14 chiffres. Sinon ça créera une anomalie.
+        Retourne un SIRET s'il a 14 chiffres (ou un SIREN de 9 chiffres si allow_siren=True).
         """
         digits = self._extract_digits(value)
-        if not digits or len(digits) != 14:
+        if not digits:
+            return None
+        
+        if allow_siren and len(digits) == 9:
+            return digits
+        
+        if len(digits) != 14:
             return None
 
         return digits
@@ -232,10 +238,10 @@ class ServiceValidation:
         )
         normalized_label = self._normalize_text(label)
 
-        if "attestation de fourniture des declarations sociales" in normalized_label:
-            return "attestation_siret"
-        elif re.search(r"\burssaf\b", normalized_label):
+        if "attestation de fourniture des declarations sociales" in normalized_label or re.search(r"\burssaf\b", normalized_label):
             return "urssaf"
+        elif "immatriculation au registre national" in normalized_label or "siret" in normalized_label:
+            return "attestation_siret"
         elif "facture" in normalized_label:
             return "facture"
         elif "devis" in normalized_label:
@@ -271,6 +277,9 @@ class ServiceValidation:
         rib_owner = self._block_groups(document, "bloc_titulaire_compte")
         urssaf_emetteur = self._block_groups(document, "bloc_emetteur")
         urssaf_dest = self._block_groups(document, "bloc_date_destinataire")
+        
+        siret_etablissement = self._block_groups(document, "bloc_etablissement")
+        siret_identite = self._block_groups(document, "bloc_identite_entreprise")
 
         if doc_type in ("facture", "devis"):
             company_name = sign.get("nom_societe") or vendeur.get("nom_vendeur") or vendeur.get("nom_entreprise")
@@ -302,18 +311,24 @@ class ServiceValidation:
 
         elif doc_type == "kbis":
             company_name = kbis.get("denomination")
-            company_siret = self._extract_siret(kbis.get("immatriculation_rcs"))
+            # Le Kbis contient généralement un SIREN (9 chiffres) sous l'immatriculation RCS
+            company_siret = self._extract_siret(kbis.get("immatriculation_rcs"), allow_siren=True)
             normalized["company"] = {"nom": company_name, "siret": company_siret} if (company_name or company_siret) else None
 
         elif doc_type == "rib":
             company_name = rib_owner.get("nom_titulaire")
             normalized["company"] = {"nom": company_name, "siret": None} if company_name else None
 
-        elif doc_type in ("urssaf", "attestation_siret"):
+        elif doc_type == "urssaf":
             company_name = urssaf_dest.get("raison_sociale")
             company_siret = self._extract_siret(urssaf_emetteur.get("siret_urssaf"))
             normalized["company"] = {"nom": company_name, "siret": company_siret} if (company_name or company_siret) else None
             normalized["date_expiration"] = self._parse_date(urssaf_dest.get("date_document"))
+
+        elif doc_type == "attestation_siret":
+            company_name = siret_etablissement.get("nom_commercial") or siret_identite.get("denomination")
+            company_siret = self._extract_siret(siret_etablissement.get("siret") or siret_identite.get("siren"))
+            normalized["company"] = {"nom": company_name, "siret": company_siret} if (company_name or company_siret) else None
 
         return normalized
 
@@ -467,9 +482,10 @@ class ServiceValidation:
         alertes_globales = []
         entites_connues: dict = {}
         clients_connus: dict = {}
+        contextes_verifies = []
         context = self._validate_context(contexte_utilisateur, alertes_globales)
         if not context:
-            return alertes_globales
+            return alertes_globales, contextes_verifies
 
         siret_principal = context["siret_principal"]
         if context.get("nom_principal"):
@@ -479,6 +495,8 @@ class ServiceValidation:
 
         for index, document in enumerate(nouveaux_documents, start=1):
             doc = self._normalize_ocr_document(document, index)
+            contextes_verifies.append(doc)
+            
             doc_id = doc.get("id", f"DOC-{index}")
             entity, type_entity = self._get_company_or_client(doc)
             siret = self._extract_siret(entity.get("siret")) if isinstance(entity, dict) else None
@@ -493,13 +511,13 @@ class ServiceValidation:
                 self._add_anomalie(
                     alertes_globales,
                     doc_id,
-                    f"SIRET manquant ou invalide (14 chiffres attendus) pour l'entité ({type_entity}).",
+                    f"SIRET/SIREN manquant ou invalide pour l'entité ({type_entity}).",
                 )
-            elif siret and siret != siret_principal:
+            elif siret and siret != siret_principal and not (doc.get("type") == "kbis" and siret == siret_principal[:9]):
                 self._add_anomalie(
                     alertes_globales,
                     doc_id,
-                    f"Document invalide: SIRET {siret} n'est pas égal au SIRET principal {siret_principal}.",
+                    f"Document invalide: L'identifiant {siret} ne correspond pas au SIRET principal {siret_principal}.",
                 )
 
             if doc.get("type") in ("facture", "devis"):
@@ -536,4 +554,4 @@ class ServiceValidation:
             self._check_urssaf_dates(doc, doc_id, alertes_globales)
             self._check_invoice_math(doc, doc_id, alertes_globales)
 
-        return alertes_globales
+        return alertes_globales, contextes_verifies
