@@ -64,10 +64,10 @@ async def upload_documents(
         # 4. Calculer le hash
         sha256 = hashlib.sha256(content).hexdigest()
 
-        # 4. Vérifier doublon (Désactivé temporairement pour les tests)
-        # existing = await bronze_collection.find_one({"sha256_hash": sha256})
-        # if existing:
-        #     continue
+        # 4. Vérifier doublon
+        existing = await bronze_collection.find_one({"sha256_hash": sha256})
+        if existing:
+            continue
 
         # 6. Encoder en base64
         file_b64 = base64.b64encode(content).decode("utf-8")
