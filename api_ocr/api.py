@@ -117,7 +117,7 @@ def analyze_document():
                     image_path = temp_dir_path / "document.pdf"
                 else:
                     image_path = temp_dir_path / "document.png"
-                    
+
                 with open(image_path, "wb") as f:
                     f.write(img_bytes)
             except Exception as e:
@@ -156,4 +156,9 @@ def analyze_document():
             return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=False)
+    from waitress import serve
+    
+    print("Démarrage du WSGI de production sur le port 8000")
+    print("Écoute sur http://0.0.0.0:8000")
+    
+    serve(app, host='0.0.0.0', port=8000)
