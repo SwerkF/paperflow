@@ -4,7 +4,6 @@ from typing import Optional
 
 
 class DossierDocument(BaseModel):
-    external_id: int
     entreprise_id: str
 
     nom: str
@@ -19,7 +18,6 @@ class DossierDocument(BaseModel):
 
 
 class DossierCreate(BaseModel):
-    external_id: int
     entreprise_id: str
     nom: str
     created_by: str
@@ -27,7 +25,6 @@ class DossierCreate(BaseModel):
 
 class DossierResponse(BaseModel):
     id: str
-    external_id: int
     entreprise_id: str
     nom: str
     status: str
