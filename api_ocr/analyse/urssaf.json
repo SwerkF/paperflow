@@ -1,0 +1,105 @@
+{
+  "document_type": {
+    "description": "Type de document",
+    "regex": "(Attestation de fourniture des d[ée]clarations sociales et paiement des cotisations et contributions sociales)",
+    "example_match": "Attestation de fourniture des déclarations sociales et paiement des cotisations et contributions sociales"
+  },
+  "bloc_emetteur": {
+    "description": "Bloc émetteur URSSAF",
+    "regex": "(Urssaf|URSSAF)[\\s\\S]+?(URSSAF[_ -]RHONE[- ]ALPES.*?)\\s+Courriel\\s+Tel\\.?\\s+(.+?)\\s+(\\d{4})\\s+N.?SIREN\\s+(\\d{9})",
+    "groups": {
+      "1": "marque",
+      "2": "organisme_adresse",
+      "3": "mode_contact",
+      "4": "telephone",
+      "5": "siren_urssaf"
+    },
+    "example_match": [
+      "Urssaf",
+      "URSSAF RHONE-ALPES 6 rue du 19 mars 1962 69691 VENISSIEUX CEDEX",
+      "depuis votre espace urssaf.",
+      "3957",
+      "510395239"
+    ]
+  },
+  "bloc_date_destinataire": {
+    "description": "Date et destinataire",
+    "regex": "[A-Z ]+,?\\s+le\\s+([0-9]{2}/[0-9]{2}/[0-9]{4})\\s+(SAS\\s+.+?)\\s+(TRAV\\s+INSTAL\\s+EQUIPEMENTS\\s+THERMIQU\\w*)\\s+(\\d+\\s+BD\\s+AMBROISE\\s+PARE)\\s+(\\d{5}\\s+MEYZIEU)",
+    "groups": {
+      "1": "date_document",
+      "2": "raison_sociale",
+      "3": "activite_destinataire",
+      "4": "adresse_destinataire",
+      "5": "ville_destinataire"
+    },
+    "example_match": [
+      "26/01/2022",
+      "SAS ELYOTHERM",
+      "TRAV INSTAL EQUIPEMENTS THERMIQU",
+      "9 BD AMBROISE PARE",
+      "69330 MEYZIEU"
+    ]
+  },
+  "bloc_objet": {
+    "description": "Objet de l'attestation",
+    "regex": "OBJET\\s*:?\\s*(Attestation de fourniture des d[ée]clarations sociales et paiement des cotisations et contributions sociales)",
+    "groups": {
+      "1": "objet"
+    },
+    "example_match": [
+      "Attestation de fourniture des déclarations sociales et paiement des cotisations et contributions sociales"
+    ]
+  },
+  "bloc_cadre_legal": {
+    "description": "Cadre légal et code de sécurité",
+    "regex": "Article\\s+243-1\\s+du\\s+code\\s+de\\s+la\\s+S[ée]curit[ée]\\s+sociale\\s+([A-Z0-9]{10,20})",
+    "groups": {
+      "1": "code_securite"
+    },
+    "example_match": [
+      "V99142DP2YW3NVT"
+    ]
+  },
+  "bloc_message_principal": {
+    "description": "Corps principal de la lettre",
+    "regex": "Madame,\\s+Monsieur,\\s+(Je vous adresse.+?Urssaf\\.)",
+    "groups": {
+      "1": "message"
+    },
+    "example_match": [
+      "Je vous adresse votre attestation de fourniture des déclarations sociales et de paiement des cotisations et contributions sociales. En votre qualité d'employeur, cette attestation vous est délivrée pour les établissements dont la liste figure au verso. J'attire votre attention sur le fait que ce document a été établi à partir de vos déclarations. Il ne préjuge pas de l'exactitude de ces déclarations et ne vaut pas renonciation au recouvrement d'éventuelles créances. La validité de cette attestation et le détail des informations contenues doivent être contrôlés par votre cocontractant. Pour tout renseignement complémentaire, n'hésitez pas à prendre contact avec nos conseillers Urssaf."
+    ]
+  },
+  "bloc_signature": {
+    "description": "Formule de politesse et signataire",
+    "regex": "Cordialement,\\s+Le Directeur\\s+(.+?)\\s*$",
+    "groups": {
+      "1": "signataire"
+    },
+    "example_match": [
+      "Frédérique MINY"
+    ]
+  },
+  "blocs_unitaires_utiles": {
+    "date": {
+      "description": "Date",
+      "regex": "([0-9]{2}/[0-9]{2}/[0-9]{4})",
+      "example_match": "26/01/2022"
+    },
+    "siren": {
+      "description": "SIREN",
+      "regex": "(\\d{9})",
+      "example_match": "510395239"
+    },
+    "code_securite": {
+      "description": "Code de sécurité",
+      "regex": "([A-Z0-9]{10,20})",
+      "example_match": "V99142DP2YW3NVT"
+    },
+    "code_postal": {
+      "description": "Code postal",
+      "regex": "(\\d{5})",
+      "example_match": "69330"
+    }
+  }
+}

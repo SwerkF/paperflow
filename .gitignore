@@ -2,3 +2,14 @@ env/*
 #output*/*
 __pycache__
 venv/
+**/venv/
+
+encode.py
+*.html
+result_*.json
+outputs/
+
+scripts/output*/
+payload.json
+
+recherche/
