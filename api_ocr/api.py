@@ -119,6 +119,19 @@ def analyze_document():
 
                 with open(image_path, "wb") as f:
                     f.write(img_bytes)
+                    
+                if not base64_string.startswith("JVBERi0"):
+                    try:
+                        from PIL import Image
+                        with Image.open(image_path) as img:
+                            max_size = 2000
+                            if max(img.size) > max_size:
+                                print(f"Resizing image from {img.size} limits...")
+                                img.thumbnail((max_size, max_size), getattr(Image, 'Resampling', Image).LANCZOS)
+                                img.save(image_path)
+                    except Exception as resize_err:
+                        print(f"Warning: Could not resize image: {resize_err}")
+
             except Exception as e:
                 return jsonify({"error": f"Erreur décodage Base64: {str(e)}"}), 400
         elif 'image' in request.files:

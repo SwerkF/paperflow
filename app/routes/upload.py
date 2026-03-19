@@ -5,9 +5,10 @@ import base64
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form, BackgroundTasks
 
-from app.database import bronze_collection, silver_collection
+from app.database import bronze_collection, silver_collection, entreprises_collection
 from app.models.bronze import BronzeDocument, BronzeResponse
 from app.services.processor import process_ocr
+from bson import ObjectId
 
 router = APIRouter(prefix="/upload", tags=["Upload"])
 
@@ -15,12 +16,24 @@ router = APIRouter(prefix="/upload", tags=["Upload"])
 @router.post("/")
 async def upload_documents(
     files: List[UploadFile] = File(...),
-    dossierId: int = Form(...),
-    entrepriseId: int = Form(...),
+    dossierId: str = Form(...),
+    entrepriseId: str = Form(...),
+    siret_principal: str = Form(None),
+    nom_principal: str = Form(None),
     background_tasks: BackgroundTasks = None
 ):
     allowed_types = ["application/pdf", "image/jpeg", "image/png"]
     results = []
+
+    # --- Récupération du contexte Entreprise ---
+    entreprise = None
+    if ObjectId.is_valid(entrepriseId):
+        entreprise = await entreprises_collection.find_one({"_id": ObjectId(entrepriseId)})
+    
+    # Si le SIRET n'a pas été fourni explicitement, on le prend dans la collection Entreprise
+    if not siret_principal and entreprise:
+        siret_principal = entreprise.get("siret")
+        nom_principal = entreprise.get("denomination_sociale")
 
     for file in files:
         # 1. Vérifier le type
@@ -42,10 +55,10 @@ async def upload_documents(
         # 3. Calculer le hash
         sha256 = hashlib.sha256(content).hexdigest()
 
-        # 4. Vérifier doublon
-        existing = await bronze_collection.find_one({"sha256_hash": sha256})
-        if existing:
-            continue
+        # 4. Vérifier doublon (Désactivé temporairement pour les tests)
+        # existing = await bronze_collection.find_one({"sha256_hash": sha256})
+        # if existing:
+        #     continue
 
         # 5. Encoder en base64
         file_b64 = base64.b64encode(content).decode("utf-8")
@@ -78,15 +91,41 @@ async def upload_documents(
             "entrepriseId": entrepriseId
         })
 
-        # 9. Lancer OCR en background
+        # 9. Lancer Airflow en background
         if background_tasks:
+            import requests
+            def trigger_airflow(b_id, f_b64, fname, d_id, e_id, siret, nom):
+                try:
+                    airflow_url = "http://airflow-webserver:8080/api/v1/dags/hackathon_flow_complet/dagRuns"
+                    airflow_payload = {
+                        "conf": {
+                            "bronze_id": b_id,
+                            "filename": fname,
+                            "dossierId": d_id,
+                            "entrepriseId": e_id,
+                            "siret_principal": siret,
+                            "nom_principal": nom
+                        }
+                    }
+                    resp = requests.post(
+                        airflow_url,
+                        json=airflow_payload,
+                        auth=("airflow", "airflow")
+                    )
+                    resp.raise_for_status()
+                    print(f"DAG Airflow déclenché avec succès pour {fname}")
+                except Exception as e:
+                    print(f"Erreur lors du déclenchement du DAG Airflow : {e}")
+                    
             background_tasks.add_task(
-                process_ocr,
-                content,
+                trigger_airflow,
+                str(result.inserted_id),
+                file_b64,
                 file.filename,
-                result.inserted_id,
                 dossierId,
-                entrepriseId
+                entrepriseId,
+                siret_principal,
+                nom_principal
             )
 
         # 10. Réponse
