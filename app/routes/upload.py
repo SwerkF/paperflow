@@ -12,6 +12,8 @@ from bson import ObjectId
 
 router = APIRouter(prefix="/upload", tags=["Upload"])
 
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
+
 
 @router.post("/")
 async def upload_documents(
@@ -52,7 +54,14 @@ async def upload_documents(
                 detail=f"Fichier vide : {file.filename}"
             )
 
-        # 3. Calculer le hash
+        # 3. Vérifier la taille
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Fichier trop volumineux : {file.filename} ({len(content) // (1024*1024)}MB). Maximum : 50MB"
+            )
+
+        # 4. Calculer le hash
         sha256 = hashlib.sha256(content).hexdigest()
 
         # 4. Vérifier doublon (Désactivé temporairement pour les tests)
@@ -60,10 +69,10 @@ async def upload_documents(
         # if existing:
         #     continue
 
-        # 5. Encoder en base64
+        # 6. Encoder en base64
         file_b64 = base64.b64encode(content).decode("utf-8")
 
-        # 6. Construire Bronze
+        # 7. Construire Bronze
         doc = BronzeDocument(
             filename=file.filename,
             content_type=file.content_type,
@@ -74,10 +83,10 @@ async def upload_documents(
             entrepriseId=entrepriseId,
         )
 
-        # 7. Insert Bronze
+        # 8. Insert Bronze
         result = await bronze_collection.insert_one(doc.model_dump())
 
-        # 8. Créer Silver pending
+        # 9. Créer Silver pending
         await silver_collection.insert_one({
             "bronze_id": str(result.inserted_id),
             "filename": file.filename,
@@ -128,7 +137,7 @@ async def upload_documents(
                 nom_principal
             )
 
-        # 10. Réponse
+        # 11. Réponse
         results.append(
             BronzeResponse(
                 id=str(result.inserted_id),
