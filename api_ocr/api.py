@@ -113,7 +113,11 @@ def analyze_document():
             base64_string = data['image_base64'].split(",")[1] if "," in data['image_base64'] else data['image_base64']
             try:
                 img_bytes = base64.b64decode(base64_string)
-                image_path = temp_dir_path / "image_decodee.png"
+                if base64_string.startswith("JVBERi0"):
+                    image_path = temp_dir_path / "document.pdf"
+                else:
+                    image_path = temp_dir_path / "document.png"
+                    
                 with open(image_path, "wb") as f:
                     f.write(img_bytes)
             except Exception as e:
