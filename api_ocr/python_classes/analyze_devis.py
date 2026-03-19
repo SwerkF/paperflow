@@ -508,46 +508,21 @@ class AnalyzeDevis:
             "bloc_identifiants_entreprise": self._extract_identifiants_entreprise(joined_text),
         }
 
-    def analyze(self, image_path: str) -> dict:
-        results = self.ocr_model.predict(input=str(image_path))
-        
+    def analyze_from_data(self, raw_rec_texts: list[str], raw_records: list[dict]) -> dict:
         rec_texts = []
         records = []
         
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir_path = Path(temp_dir)
-            
-            for index, res in enumerate(results):
-                result_path = temp_dir_path / f"temp_result_{index}.json"
-                res.save_to_json(str(result_path))
-                
-                with result_path.open("r", encoding="utf-8") as handle:
-                    page_data = json.load(handle)
+        for i, text in enumerate(raw_rec_texts):
+            normalized = self.normalize_text(text)
+            if normalized:
+                rec_texts.append(normalized)
+                if i < len(raw_records):
+                    rec = raw_records[i].copy()
+                    rec["text"] = normalized
+                    records.append(rec)
                     
-                page_texts = page_data.get("rec_texts", [])
-                page_boxes = page_data.get("rec_boxes", [])
-                
-                if isinstance(page_texts, list):
-                    for i, item in enumerate(page_texts):
-                        normalized = self.normalize_text(str(item))
-                        if not normalized:
-                            continue
-                        
-                        rec_texts.append(normalized)
-                        
-                        if isinstance(page_boxes, list) and i < len(page_boxes):
-                            box = page_boxes[i]
-                            if isinstance(box, list) and len(box) == 4:
-                                records.append({
-                                    "text": normalized,
-                                    "x1": float(box[0]),
-                                    "y1": float(box[1]),
-                                    "x2": float(box[2]),
-                                    "y2": float(box[3]),
-                                    "x_center": (float(box[0]) + float(box[2])) / 2,
-                                })
-
         joined_text = self.join_tokens(rec_texts)
+
         vendor_entry, client_entry = self._extract_vendor_and_client(rec_texts, records)
 
         return {

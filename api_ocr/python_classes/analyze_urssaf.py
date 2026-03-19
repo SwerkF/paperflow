@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 class AnalyzeURSSAF:
-    def __init__(self, ocr_model, config_path: str | Path = "analyse/vigilance_urssaf.json"):
+    def __init__(self, ocr_model, config_path: str | Path = "analyse/urssaf.json"):
         """Initialise l'analyseur d'attestation de vigilance URSSAF avec son fichier de configuration."""
         self.config_path = Path(config_path)
         self.ocr_model = ocr_model
@@ -141,30 +141,15 @@ class AnalyzeURSSAF:
         return self._extract_blocks(joined_text)
 
 
-    def analyze(self, image_path: str) -> dict:
-        results = self.ocr_model.predict(input=str(image_path))
-        
+    def analyze_from_data(self, raw_rec_texts: list[str], raw_records: list[dict] = None) -> dict:
         rec_texts = []
-        
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir_path = Path(temp_dir)
-            
-            for index, res in enumerate(results):
-                result_path = temp_dir_path / f"temp_result_{index}.json"
-                res.save_to_json(str(result_path))
-                
-                with result_path.open("r", encoding="utf-8") as handle:
-                    page_data = json.load(handle)
-                    
-                page_texts = page_data.get("rec_texts", [])
-                
-                if isinstance(page_texts, list):
-                    for item in page_texts:
-                        text_str = str(item).strip()
-                        if text_str:
-                            rec_texts.append(text_str)
+        for item in raw_rec_texts:
+            text_str = item.strip()
+            if text_str:
+                rec_texts.append(text_str)
 
         raw_joined_text = " ".join(rec_texts)
         joined_text = self.normalize_text(raw_joined_text)
 
+        # Extraction dynamique à partir du JSON
         return self._extract_blocks(joined_text)

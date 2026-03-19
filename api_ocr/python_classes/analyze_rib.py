@@ -287,44 +287,13 @@ class AnalyzeRIB:
             "bloc_titulaire_compte": self._extract_titulaire_compte(rec_texts),
         }
 
-    def analyze(self, image_path: str) -> dict:
-        results = self.ocr_model.predict(input=str(image_path))
-        
+    def analyze_from_data(self, raw_rec_texts: list[str], raw_records: list[dict] = None) -> dict:
+        """Traite les données OCR déjà extraites par l'API principale."""
         rec_texts = []
-        records = []
-        
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir_path = Path(temp_dir)
-            
-            for index, res in enumerate(results):
-                result_path = temp_dir_path / f"temp_result_{index}.json"
-                res.save_to_json(str(result_path))
-                
-                with result_path.open("r", encoding="utf-8") as handle:
-                    page_data = json.load(handle)
-                    
-                page_texts = page_data.get("rec_texts", [])
-                page_boxes = page_data.get("rec_boxes", [])
-                
-                if isinstance(page_texts, list):
-                    for i, item in enumerate(page_texts):
-                        normalized = self.normalize_text(str(item))
-                        if not normalized:
-                            continue
-                        
-                        rec_texts.append(normalized)
-                        
-                        if isinstance(page_boxes, list) and i < len(page_boxes):
-                            box = page_boxes[i]
-                            if isinstance(box, list) and len(box) == 4:
-                                records.append({
-                                    "text": normalized,
-                                    "x1": float(box[0]),
-                                    "y1": float(box[1]),
-                                    "x2": float(box[2]),
-                                    "y2": float(box[3]),
-                                    "x_center": (float(box[0]) + float(box[2])) / 2,
-                                })
+        for item in raw_rec_texts:
+            normalized = self.normalize_text(item)
+            if normalized:
+                rec_texts.append(normalized)
 
         joined_text = self.join_tokens(rec_texts)
 

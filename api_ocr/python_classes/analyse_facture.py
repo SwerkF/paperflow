@@ -393,30 +393,13 @@ class AnalyzeFacture:
         }
 
 
-    def analyze(self, image_path: str) -> dict:
-        """Exécute l'OCR sur une facture et extrait tous les blocs."""
-
-        results = self.ocr_model.predict(input=str(image_path))
-        
+    def analyze_from_data(self, raw_rec_texts: list[str], raw_records: list[dict] = None) -> dict:
+        """Traite les données OCR déjà extraites par l'API principale."""
         rec_texts = []
-        with tempfile.TemporaryDirectory() as temp_dir:
-            
-            temp_dir_path = Path(temp_dir)
-            
-            for index, res in enumerate(results):
-                result_path = temp_dir_path / f"temp_result_{index}.json"
-                res.save_to_json(str(result_path))
-                
-                with result_path.open("r", encoding="utf-8") as handle:
-                    page_data = json.load(handle)
-                    
-                page_texts = page_data.get("rec_texts", [])
-                
-                if isinstance(page_texts, list):
-                    for item in page_texts:
-                        normalized = self.normalize_text(str(item))
-                        if normalized:
-                            rec_texts.append(normalized)
+        for item in raw_rec_texts:
+            normalized = self.normalize_text(item)
+            if normalized:
+                rec_texts.append(normalized)
 
         joined_text = self.join_tokens(rec_texts)
 
