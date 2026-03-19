@@ -26,19 +26,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (formData) => {
     const data = await loginUser(formData);
-    localStorage.setItem("token", data.token);
+
+    localStorage.setItem("token", data.access_token);
 
     try {
-      const payload = JSON.parse(atob(data.token.split(".")[1]));
+      const payload = JSON.parse(atob(data.access_token.split(".")[1]));
       setUser(payload);
     } catch {
-      setUser(data.user || null);
+      setUser({ role: data.role } || null);
     }
 
     return data;
   };
-
-
 
   const logout = () => {
     localStorage.removeItem("token");
