@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slide - PaddleOCR</title>
+  <style>
+    :root {
+      --bg: #d4d4d4;
+      --window: #efefef;
+      --bar: #9a9a9a;
+      --border: #6b6b6b;
+      --ink: #111;
+      --blue: #3347e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #cfcfcf;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Courier New", monospace;
+      color: var(--ink);
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: var(--window);
+      border: 2px solid #8d8d8d;
+      box-shadow: inset 0 0 0 2px #ddd;
+      padding: 14px;
+    }
+
+    .window-bar {
+      height: 44px;
+      background: var(--bar);
+      border: 2px solid #7a7a7a;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .btn {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #4b4b4b;
+      background: #d9d9d9;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .content {
+      margin-top: 22px;
+      height: calc(100% - 66px);
+      border: 3px solid #4f4f4f;
+      padding: 26px 34px 30px;
+      background: #fbfbfb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 50px;
+      line-height: 1.1;
+      letter-spacing: 0.5px;
+    }
+
+    .hero {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .left-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding-left: 20px;
+    }
+
+    .doc-icon {
+      width: 180px;
+      height: 220px;
+      border: 4px solid #111;
+      background:
+        linear-gradient(135deg, transparent 0 24px, #111 24px 30px, transparent 30px),
+        #fff;
+      position: relative;
+    }
+
+    .doc-icon::before,
+    .doc-icon::after {
+      content: "";
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      height: 4px;
+      background: #111;
+      box-shadow: 0 28px 0 #111, 0 56px 0 #111, 0 84px 0 #111;
+      top: 40px;
+    }
+
+    .plus {
+      font-size: 68px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .paddle {
+      font-size: 86px;
+      font-weight: 700;
+      color: var(--blue);
+      font-family: Arial, Helvetica, sans-serif;
+      transform: skew(-12deg);
+      letter-spacing: 2px;
+    }
+
+    .right-text {
+      padding-right: 12px;
+    }
+
+    .right-text h2 {
+      margin: 0 0 26px;
+      font-size: 34px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 800;
+    }
+
+    .right-text ul {
+      margin: 0;
+      padding-left: 26px;
+      font-size: 24px;
+      line-height: 1.45;
+    }
+
+    .footer {
+      margin-top: auto;
+      font-size: 24px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <div class="window-bar">
+      <div class="btn">_</div>
+      <div class="btn">□</div>
+      <div class="btn">X</div>
+    </div>
+    <section class="content">
+      <h1>PaddleOCR : moteur OCR choisi</h1>
+      <div class="hero">
+        <div class="left-visual">
+          <div class="doc-icon" aria-hidden="true"></div>
+          <div class="plus">+</div>
+          <div class="paddle">PaddleOCR</div>
+        </div>
+        <div class="right-text">
+          <h2>Pourquoi ce choix ?</h2>
+          <ul>
+            <li>lecture d'images et de PDF</li>
+            <li>bonne extraction sur documents administratifs</li>
+            <li>fonctionne en local avec Python</li>
+            <li>open source et facile à intégrer</li>
+            <li>base idéale avant Regex et Heuristique</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer">
+        + transforme un document visuel en texte exploitable<br />
+        + première étape du pipeline d'extraction<br />
+        + choisi pour sa robustesse, sa simplicité d'intégration et son exécution locale
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slide - Heuristique</title>
+  <style>
+    :root {
+      --window: #efefef;
+      --bar: #9a9a9a;
+      --ink: #111;
+      --accent: #1a1a1a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #cfcfcf;
+      font-family: "Courier New", monospace;
+      color: var(--ink);
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: var(--window);
+      border: 2px solid #8d8d8d;
+      box-shadow: inset 0 0 0 2px #ddd;
+      padding: 14px;
+    }
+
+    .window-bar {
+      height: 44px;
+      background: var(--bar);
+      border: 2px solid #7a7a7a;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 0 16px;
+    }
+
+    .btn {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #4b4b4b;
+      background: #d9d9d9;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .content {
+      margin-top: 22px;
+      height: calc(100% - 66px);
+      border: 3px solid #4f4f4f;
+      padding: 26px 34px 30px;
+      background: #fbfbfb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 46px;
+      line-height: 1.1;
+    }
+
+    .hero {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .diagram {
+      width: 500px;
+      min-height: 270px;
+      border: 4px solid #111;
+      background: #fff;
+      padding: 24px;
+      font-size: 26px;
+      line-height: 1.55;
+    }
+
+    .diagram .big {
+      display: block;
+      margin-bottom: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 54px;
+      font-weight: 800;
+    }
+
+    .right h2 {
+      margin: 0 0 16px;
+      font-size: 32px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 800;
+    }
+
+    .right ul {
+      margin: 0 0 18px;
+      padding-left: 26px;
+      font-size: 23px;
+      line-height: 1.42;
+    }
+
+    .footer {
+      margin-top: auto;
+      font-size: 24px;
+      line-height: 1.42;
+    }
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <div class="window-bar">
+      <div class="btn">_</div>
+      <div class="btn">□</div>
+      <div class="btn">X</div>
+    </div>
+    <section class="content">
+      <h1>Heuristique : extraction par logique</h1>
+      <div class="hero">
+        <div class="left">
+          <div class="diagram">
+            <span class="big">Heuristique</span>
+            Description -> lignes du tableau<br />
+            Domiciliation -> IBAN<br />
+            bloc avant Facture -> vendeur<br />
+            bloc après vendeur -> client
+          </div>
+        </div>
+        <div class="right">
+          <h2>Fonctionnement</h2>
+          <ul>
+            <li>une heuristique utilise le contexte, l'ordre et la position</li>
+            <li>elle reconstruit la donnée même si le texte varie</li>
+            <li>elle sert quand une regex seule serait trop fragile</li>
+          </ul>
+          <h2>Utilisée surtout pour</h2>
+          <ul>
+            <li>RIB</li>
+            <li>Facture</li>
+            <li>Devis</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer">
+        + utile quand la mise en page n'est pas toujours la même<br />
+        + plus souple face aux erreurs OCR et aux documents semi-structurés<br />
+        + complète les regex sur les zones variables
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Présentation Regex Paperflow</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --paper: #fffdf8;
+      --ink: #1f2937;
+      --muted: #5f6b7a;
+      --line: #dccfb8;
+      --accent: #b45309;
+      --accent-soft: #fff2df;
+      --accent-2: #0f766e;
+      --shadow: 0 14px 40px rgba(77, 51, 13, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(180, 83, 9, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.14), transparent 24%),
+        linear-gradient(180deg, #f7f1e8 0%, var(--bg) 100%);
+      line-height: 1.5;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero,
+    .section,
+    .card {
+      background: color-mix(in srgb, var(--paper) 88%, white 12%);
+      border: 1px solid rgba(220, 207, 184, 0.8);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -60px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(180, 83, 9, 0.18), transparent 70%);
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 12px;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    h2 {
+      font-size: 1.65rem;
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      font-size: 1.12rem;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lead {
+      font-size: 1.08rem;
+      max-width: 78ch;
+      color: var(--muted);
+    }
+
+    .grid,
+    .file-grid,
+    .hero-grid,
+    .timeline {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top: 24px;
+    }
+
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .file-grid {
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    }
+
+    .timeline {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 18px;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.92rem;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .section,
+    .card {
+      padding: 24px;
+      margin-top: 22px;
+    }
+
+    .mini-title {
+      color: var(--accent-2);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .step {
+      padding: 16px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      background: rgba(255, 250, 241, 0.92);
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      background: #f7f0e3;
+      border: 1px solid #eadfca;
+      border-radius: 6px;
+      padding: 1px 5px;
+    }
+
+    pre {
+      margin: 14px 0 0;
+      overflow: auto;
+      padding: 16px;
+      border-radius: 16px;
+      background: #1b2430;
+      color: #f3f7fb;
+      font-size: 0.92rem;
+    }
+
+    .path {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: #fff7ea;
+      border-radius: 12px;
+      margin-top: 14px;
+    }
+
+    .speech {
+      columns: 2;
+      column-gap: 26px;
+    }
+
+    .speech p {
+      break-inside: avoid;
+    }
+
+    @media (max-width: 820px) {
+      .speech {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="chip">Support oral 3 min</div>
+      <h1>Regex, heuristiques et extraction de documents dans Paperflow</h1>
+      <p class="lead">
+        Le principe du projet est simple : on lit un document avec l'OCR, on nettoie le texte, puis on extrait des
+        blocs utiles avec deux outils complémentaires : les regex et les heuristiques.
+      </p>
+      <div class="hero-grid">
+        <div class="step">
+          <div class="mini-title">Regex</div>
+          <p>Décrire la forme d'une donnée : date, SIREN, email, IBAN, total TTC.</p>
+        </div>
+        <div class="step">
+          <div class="mini-title">Heuristique</div>
+          <p>Déduire une zone probable selon le contexte, l'ordre ou la position dans le document.</p>
+        </div>
+        <div class="step">
+          <div class="mini-title">OCR</div>
+          <p>Produit des tokens <code>rec_texts</code> qui ne sont pas toujours parfaits.</p>
+        </div>
+        <div class="step">
+          <div class="mini-title">JSON final</div>
+          <p>Contient les blocs extraits et les groupes nommés utiles au métier.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>C'est quoi une regex ?</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Définition simple</h3>
+          <p>
+            Une regex, ou expression régulière, est un motif de recherche. On ne cherche pas une valeur exacte,
+            on cherche une forme.
+          </p>
+          <ul>
+            <li><code>\d{9}</code> signifie "exactement 9 chiffres".</li>
+            <li><code>\d{14}</code> signifie "exactement 14 chiffres".</li>
+            <li><code>[A-Z]{2}\d{2}</code> correspond au début d'un IBAN comme <code>FR76</code>.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>À quoi ça sert ici ?</h3>
+          <ul>
+            <li>Reconnaître un SIREN, un SIRET, une date, un BIC, un email.</li>
+            <li>Délimiter un bloc fixe comme <code>Greffe du Tribunal...</code> ou <code>Cordialement</code>.</li>
+            <li>Capturer plusieurs morceaux dans le même motif grâce aux groupes.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Exemple concret</h3>
+          <pre><code>Siret\s*:\s*(\d{14})</code></pre>
+          <ul>
+            <li><code>Siret</code> = texte fixe.</li>
+            <li><code>\s*</code> = zéro ou plusieurs espaces.</li>
+            <li><code>:</code> = deux-points attendu.</li>
+            <li><code>(\d{14})</code> = on capture les 14 chiffres du SIRET.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>C'est quoi une heuristique ?</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Définition simple</h3>
+          <p>
+            Une heuristique est une règle pratique. Elle n'est pas mathématiquement parfaite, mais elle marche bien
+            dans la plupart des cas réels.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Pourquoi on en a besoin</h3>
+          <ul>
+            <li>Les documents ne sont pas toujours alignés pareil.</li>
+            <li>L'OCR peut couper une phrase en plusieurs tokens.</li>
+            <li>Une regex unique peut devenir trop fragile si la mise en page varie.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Exemples dans ce projet</h3>
+          <ul>
+            <li>Sur une facture, prendre les lignes entre <code>Description</code> et le deuxième <code>Total HT</code>.</li>
+            <li>Sur un RIB, prendre la zone entre <code>Domiciliation</code> et <code>IBAN</code>.</li>
+            <li>Si un token ressemble à <code>34000 Montpellier</code>, le traiter comme ville + code postal.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="note">
+        À dire : une regex cherche une forme précise, une heuristique cherche une zone probable ou une logique de
+        lecture du document.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Règles de base des regex</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Classes de caractères</h3>
+          <ul>
+            <li><code>\d</code> = un chiffre.</li>
+            <li><code>\s</code> = un espace, une tabulation ou un retour à la ligne.</li>
+            <li><code>[A-Z]</code> = une majuscule.</li>
+            <li><code>[A-Za-z0-9]</code> = lettre ou chiffre.</li>
+            <li><code>.</code> = n'importe quel caractère.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Quantificateurs</h3>
+          <ul>
+            <li><code>+</code> = un ou plusieurs.</li>
+            <li><code>*</code> = zéro ou plusieurs.</li>
+            <li><code>?</code> = optionnel.</li>
+            <li><code>{9}</code> = exactement 9 fois.</li>
+            <li><code>{2,4}</code> = entre 2 et 4 fois.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Groupes</h3>
+          <ul>
+            <li><code>(...)</code> = groupe capturé.</li>
+            <li><code>(.+?)</code> = capture un texte variable sans trop déborder.</li>
+            <li>Dans ces scripts, les groupes deviennent les champs du JSON final.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Exemple décomposé</h3>
+          <pre><code>Num[ée]ro de facture\s*:?\s*([A-Z0-9-]+)</code></pre>
+          <ul>
+            <li><code>Num[ée]ro</code> accepte <code>Numero</code> ou <code>Numéro</code>.</li>
+            <li><code>\s*</code> accepte les espaces éventuels.</li>
+            <li><code>:?</code> accepte la présence ou non du <code>:</code>.</li>
+            <li><code>([A-Z0-9-]+)</code> capture le numéro de facture.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Pipeline général des scripts</h2>
+      <div class="timeline">
+        <div class="step"><strong>1. Entrée</strong><br />Image ou PDF.</div>
+        <div class="step"><strong>2. OCR</strong><br /><code>run_ocr()</code> produit des tokens <code>rec_texts</code>.</div>
+        <div class="step"><strong>3. Nettoyage</strong><br />On corrige les fautes OCR et les espaces.</div>
+        <div class="step"><strong>4. Extraction</strong><br />Regex et heuristiques récupèrent les blocs utiles.</div>
+        <div class="step"><strong>5. JSON</strong><br />On sauvegarde tout dans un fichier final.</div>
+      </div>
+      <div class="note">
+        Point important : dans ce projet, la qualité de l'extraction dépend autant de la normalisation OCR que des regex.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Comment est construit le fichier de sortie</h2>
+      <p>Les scripts écrivent presque tous un JSON final de cette forme :</p>
+      <pre><code>{
+  "source_image": "...",
+  "ocr_result_file": "...",
+  "regex_config_file": "...",
+  "rec_texts": ["token 1", "token 2"],
+  "joined_text": "texte OCR nettoyé",
+  "extracted_blocks": {
+    "bloc_x": {
+      "description": "...",
+      "regex": "...",
+      "matched": true,
+      "full_match": "...",
+      "groups": {
+        "champ_1": "...",
+        "champ_2": "..."
+      }
+    }
+  }
+}</code></pre>
+      <ul>
+        <li><code>rec_texts</code> = morceaux bruts reconnus par l'OCR.</li>
+        <li><code>joined_text</code> = texte concaténé et normalisé.</li>
+        <li><code>matched</code> = vrai ou faux selon la réussite de l'extraction.</li>
+        <li><code>full_match</code> = texte complet capturé.</li>
+        <li><code>groups</code> = champs nommés utiles comme <code>siren</code>, <code>date_facture</code>, <code>iban</code>.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Regex ou heuristique : dans quel cas ?</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>On choisit une regex quand...</h3>
+          <ul>
+            <li>la forme de la donnée est stable;</li>
+            <li>le libellé autour est bien connu;</li>
+            <li>on veut capturer une valeur précise.</li>
+          </ul>
+          <p>Exemples : date, SIREN, SIRET, IBAN, BIC, numéro de facture.</p>
+        </article>
+        <article class="card">
+          <h3>On choisit une heuristique quand...</h3>
+          <ul>
+            <li>la mise en page change d'un document à l'autre;</li>
+            <li>l'OCR segmente mal les lignes;</li>
+            <li>on repère mieux une zone qu'une forme exacte.</li>
+          </ul>
+          <p>Exemples : bloc vendeur, bloc client, lignes d'un tableau, domiciliation bancaire.</p>
+        </article>
+        <article class="card">
+          <h3>En pratique</h3>
+          <ul>
+            <li>Document officiel stable : plutôt regex longues par sections.</li>
+            <li>Document commercial variable : mélange regex + heuristiques.</li>
+            <li>C'est exactement ce qu'on voit dans les 6 fichiers.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Logique par fichier</h2>
+      <div class="file-grid">
+        <article class="card">
+          <div class="mini-title">URSSAF</div>
+          <h3><span class="path">test_local_regex_vigilance_urssaf.py</span></h3>
+          <p>Document très structuré : ici on est surtout sur de grosses regex par blocs.</p>
+          <ul>
+            <li>Nettoyage OCR ciblé : villes mal lues, mots déformés, espaces incohérents.</li>
+            <li>Extraction de sections fixes : émetteur, destinataire, cadre légal, message, signature.</li>
+            <li>Usage fort de <code>\s+</code> et <code>(.+?)</code> pour absorber les retours ligne OCR.</li>
+          </ul>
+          <pre><code>Exemple :
+([A-Z]+,?le\s+[0-9]{2}/[0-9]{2}/[0-9]{4})
+
+But :
+capturer une ville en majuscules + "le" + une date.</code></pre>
+          <p><strong>Pourquoi regex ?</strong> Parce que le courrier URSSAF suit une structure très répétitive.</p>
+        </article>
+
+        <article class="card">
+          <div class="mini-title">RIB</div>
+          <h3><span class="path">test_local_regex_rib.py</span></h3>
+          <p>Cas typique où la regex seule ne suffit pas, donc le script mélange regex et heuristiques.</p>
+          <ul>
+            <li><code>DOC_TYPE_RE</code> détecte le type de document.</li>
+            <li><code>IBAN_RE</code> et <code>BIC_RE</code> reconnaissent des formats universels.</li>
+            <li>Le bloc RIB national est reconstruit en cherchant des tokens de bonne longueur.</li>
+            <li>Le titulaire est reconstruit par ordre logique : nom, adresse, ville, pays.</li>
+          </ul>
+          <pre><code>Exemples :
+IBAN_RE = [A-Z]{2}\d{2}[A-Z0-9]{11,30}
+BIC_RE  = \b[A-Z0-9]{8,11}\b
+
+Heuristique :
+prendre la zone entre "Code banque" et "IBAN".</code></pre>
+          <p><strong>Pourquoi heuristique ?</strong> Parce qu'un RIB change selon la banque, donc la mise en page n'est pas toujours stable.</p>
+        </article>
+
+        <article class="card">
+          <div class="mini-title">KBIS</div>
+          <h3><span class="path">test_local_regex_kbis.py</span></h3>
+          <p>Approche très orientée blocs administratifs complets.</p>
+          <ul>
+            <li>Le script extrait le greffe, l'identification de la société, les dirigeants, l'activité et les observations.</li>
+            <li>Les regex s'ancrent sur des titres très stables comme <code>IDENTIFICATION DE LA PERSONNE MORALE</code>.</li>
+            <li>Chaque capture est ensuite transformée en champs nommés.</li>
+          </ul>
+          <pre><code>Exemple :
+Greffe du Tribunal de Commerce de\s+(.+?)\s+Code de vérification
+
+Le groupe (. +?) capture la ville du greffe
+jusqu'au prochain libellé fixe.</code></pre>
+          <p><strong>Pourquoi regex ?</strong> Parce qu'un KBIS officiel a des titres très réguliers.</p>
+        </article>
+
+        <article class="card">
+          <div class="mini-title">FACTURE</div>
+          <h3><span class="path">test_local_regex_facture.py</span></h3>
+          <p>Script hybride : regex pour les métadonnées stables, heuristiques pour les zones variables.</p>
+          <ul>
+            <li>Nettoie beaucoup le bruit OCR.</li>
+            <li>Déduit vendeur et client selon la position des blocs avant le mot <code>Facture</code>.</li>
+            <li>Extrait numéro, date et numéro client avec une regex stable.</li>
+            <li>Repère les lignes entre <code>Description</code> et le deuxième <code>Total HT</code>.</li>
+          </ul>
+          <pre><code>Exemple regex :
+Num[ée]ro de facture\s*:?\s*([A-Z0-9-]+)
+
+Exemple heuristique :
+prendre les tokens entre "Description"
+et le deuxième "Total HT".</code></pre>
+          <p><strong>Pourquoi mixte ?</strong> Les entêtes sont stables, mais le corps de facture varie plus.</p>
+        </article>
+
+        <article class="card">
+          <div class="mini-title">DEVIS</div>
+          <h3><span class="path">test_local_regex_devis.py</span></h3>
+          <p>Le devis est souvent plus libre visuellement, donc le script prévoit plus de fallbacks.</p>
+          <ul>
+            <li>Regex de base : téléphone, date, montant, email, code postal.</li>
+            <li>Le vendeur et le client peuvent être extraits soit par libellés, soit par colonnes OCR.</li>
+            <li>Les infos du devis tentent d'abord une regex, puis passent en heuristique si besoin.</li>
+            <li>Le tableau est pris entre l'entête de colonnes et le début des totaux.</li>
+          </ul>
+          <pre><code>Exemples :
+PHONE_RE = (?:\+?\d[\d .()/:-]{7,}\d)
+DATE_RE  = \b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b
+
+Heuristique :
+si la regex globale échoue,
+on reconstruit les infos morceau par morceau.</code></pre>
+          <p><strong>Pourquoi plus d'heuristiques ?</strong> Parce que le devis varie beaucoup selon l'émetteur.</p>
+        </article>
+
+        <article class="card">
+          <div class="mini-title">ATTESTATION SIRET</div>
+          <h3><span class="path">test_local_regex_attestion_siret.py</span></h3>
+          <p>Comme le KBIS, c'est un document officiel, donc la stratégie repose surtout sur les sections fixes.</p>
+          <ul>
+            <li>Le script nettoie plusieurs erreurs OCR avant extraction.</li>
+            <li>Il extrait l'entête, l'identité, le siège, la gestion, la qualité du dirigeant et l'établissement.</li>
+            <li>Les groupes donnent ensuite <code>siren</code>, <code>siret</code>, <code>code_ape</code>, <code>capital_social</code>, etc.</li>
+          </ul>
+          <pre><code>Exemple :
+Siret\s*:\s*(\d{14})
+
+Ici la regex est parfaite,
+car le format SIRET est très stable.</code></pre>
+          <p><strong>Pourquoi regex ?</strong> Parce que le document administratif est très codifié.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Ce que tu peux dire en conclusion</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Idée 1</h3>
+          <p>Une regex décrit la forme d'une donnée.</p>
+        </article>
+        <article class="card">
+          <h3>Idée 2</h3>
+          <p>Une heuristique décrit une manière probable de lire le document.</p>
+        </article>
+        <article class="card">
+          <h3>Idée 3</h3>
+          <p>Les documents officiels utilisent surtout des regex par sections.</p>
+        </article>
+        <article class="card">
+          <h3>Idée 4</h3>
+          <p>Les documents commerciaux variables utilisent davantage d'heuristiques.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Script oral prêt à dire</h2>
+      <div class="speech">
+        <p>
+          Dans ce projet, on utilise deux idées principales : les regex et les heuristiques. Une regex sert à décrire
+          la forme d'une donnée, par exemple une date, un SIREN ou un IBAN. Une heuristique, au contraire, est une
+          règle pratique qu'on utilise quand la mise en page du document varie trop pour écrire une seule regex fiable.
+        </p>
+        <p>
+          Le pipeline est toujours le même. On commence par faire un OCR avec PaddleOCR. Ensuite, le script récupère
+          les textes détectés dans <code>rec_texts</code>, puis les fusionne dans <code>joined_text</code>. Après cela,
+          il applique une normalisation pour corriger les erreurs classiques de l'OCR.
+        </p>
+        <p>
+          Pour les documents très structurés comme le KBIS, l'attestation SIRET ou l'attestation URSSAF, on utilise
+          surtout de grandes regex ancrées sur les titres officiels du document. Dans ce cas, le plus efficace est de
+          capturer une section entière puis d'en extraire les champs avec des groupes.
+        </p>
+        <p>
+          Pour les documents plus variables comme le RIB, la facture ou le devis, on ajoute des heuristiques. Par
+          exemple, sur une facture, on peut prendre les lignes entre <code>Description</code> et <code>Total HT</code>.
+          Sur un RIB, on peut prendre la zone entre <code>Domiciliation</code> et <code>IBAN</code>.
+        </p>
+        <p>
+          Le résultat final est un JSON avec le texte OCR brut, le texte nettoyé et les blocs extraits. Chaque bloc
+          indique si l'extraction a réussi, quel texte a été capturé et quelles données métiers ont été retrouvées.
+        </p>
+        <p>
+          Donc l'idée générale, ce n'est pas seulement écrire des regex. C'est choisir la bonne méthode selon le
+          document : regex si la structure est stable, heuristique si elle varie trop.
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

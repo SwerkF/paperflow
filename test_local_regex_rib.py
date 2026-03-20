@@ -8,9 +8,9 @@ from pathlib import Path
 os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 os.environ["FLAGS_use_mkldnn"] = "0"
 
-DEFAULT_IMAGE_PATH = Path("documents/rib/rib3.png")
+DEFAULT_IMAGE_PATH = Path("documents/rib/rib1.png")
 IMAGE_PATH = os.environ.get("PAPERFLOW_INPUT_PATH", str(DEFAULT_IMAGE_PATH))
-OUTPUT_DIR = Path(os.environ.get("PAPERFLOW_OUTPUT_DIR", "output4"))
+OUTPUT_DIR = Path(os.environ.get("PAPERFLOW_OUTPUT_DIR", "output1"))
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 OCR_RESULT_PATH = OUTPUT_DIR / "rib_result.json"

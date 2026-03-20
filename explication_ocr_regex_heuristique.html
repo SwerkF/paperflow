@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCR, Regex et Heuristique</title>
+  <style>
+    :root {
+      --bg: #ece7de;
+      --paper: #fffdf8;
+      --ink: #1a1a1a;
+      --muted: #5e615f;
+      --line: #d8ccb7;
+      --accent: #b45309;
+      --accent-soft: #fff3e1;
+      --teal: #0f766e;
+      --dark: #1b2430;
+      --shadow: 0 18px 40px rgba(72, 52, 18, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(180, 83, 9, 0.12), transparent 24%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 22%),
+        linear-gradient(180deg, #f5f0e8 0%, var(--bg) 100%);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.55;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero,
+    .section,
+    .card {
+      background: color-mix(in srgb, var(--paper) 90%, white 10%);
+      border: 1px solid rgba(216, 204, 183, 0.9);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 32px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      bottom: -60px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(180, 83, 9, 0.15), transparent 70%);
+    }
+
+    .section,
+    .card {
+      padding: 24px;
+      margin-top: 22px;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 12px;
+      line-height: 1.15;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.25rem);
+    }
+
+    h2 {
+      font-size: 1.65rem;
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      font-size: 1.12rem;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lead {
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.92rem;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .grid,
+    .duo,
+    .trio,
+    .timeline {
+      display: grid;
+      gap: 18px;
+    }
+
+    .duo {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .trio {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .timeline {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .step,
+    .quote-box {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px dashed var(--line);
+      background: rgba(255, 250, 241, 0.95);
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: #f6efe4;
+      border: 1px solid #eadfcf;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-size: 0.92em;
+    }
+
+    pre {
+      margin: 14px 0 0;
+      overflow: auto;
+      padding: 16px;
+      border-radius: 16px;
+      background: var(--dark);
+      color: #f4f7fb;
+      font-size: 0.93rem;
+    }
+
+    .mini {
+      color: var(--teal);
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding: 14px 16px;
+      background: #fff7ea;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+    }
+
+    .quote-box {
+      font-size: 1.08rem;
+      background: linear-gradient(135deg, #fff7ea, #f6fbfa);
+    }
+
+    .quote-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="chip">Synthèse de présentation</div>
+      <h1>OCR, Regex et Heuristique</h1>
+      <p class="lead">
+        Dans ce projet, on lit d'abord le document avec un moteur OCR, puis on extrait les données utiles avec deux
+        approches complémentaires : les regex, qui reconnaissent une forme, et les heuristiques, qui déduisent une
+        information grâce au contexte.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Vue d'ensemble</h2>
+      <div class="timeline">
+        <div class="step"><strong>1. Document</strong><br />Image ou PDF administratif/commercial.</div>
+        <div class="step"><strong>2. OCR</strong><br />Le document est converti en texte exploitable.</div>
+        <div class="step"><strong>3. Nettoyage</strong><br />On corrige les erreurs OCR et les espaces.</div>
+        <div class="step"><strong>4. Extraction</strong><br />Regex et heuristiques récupèrent les champs métier.</div>
+        <div class="step"><strong>5. JSON final</strong><br />Les données extraites sont structurées en sortie.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Pourquoi avoir choisi un OCR ?</h2>
+      <div class="duo">
+        <article class="card">
+          <div class="mini">Définition</div>
+          <h3>OCR = Optical Character Recognition</h3>
+          <p>
+            Un OCR transforme un document visuel, comme une image ou un PDF scanné, en texte exploitable par un programme.
+          </p>
+        </article>
+        <article class="card">
+          <div class="mini">Pourquoi c'est nécessaire</div>
+          <ul>
+            <li>un script ne peut pas exploiter directement une image;</li>
+            <li>il faut d'abord récupérer le texte présent dans le document;</li>
+            <li>ce texte sert ensuite de base aux regex et aux heuristiques.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="trio">
+        <article class="card">
+          <div class="mini">Choix</div>
+          <h3>PaddleOCR</h3>
+          <p>Le projet utilise PaddleOCR comme moteur de reconnaissance de texte.</p>
+        </article>
+        <article class="card">
+          <div class="mini">Avantages</div>
+          <ul>
+            <li>lecture d'images et de PDF;</li>
+            <li>bonne qualité sur documents administratifs;</li>
+            <li>intégration simple en Python;</li>
+            <li>utilisation locale, sans service externe.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="mini">Pourquoi ce choix</div>
+          <ul>
+            <li>open source;</li>
+            <li>adapté à un pipeline de traitement local;</li>
+            <li>fournit un texte directement réutilisable dans le projet.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="note">
+        Idée simple à dire : PaddleOCR est la première étape du pipeline. Sans OCR, il n'y a pas de texte à analyser.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Les regex : à quoi ça sert ?</h2>
+      <div class="duo">
+        <article class="card">
+          <div class="mini">Définition</div>
+          <p>
+            Une regex, ou expression régulière, est un motif qui décrit la forme attendue d'une donnée.
+          </p>
+          <ul>
+            <li><code>\d{14}</code> pour un SIRET;</li>
+            <li><code>[0-9]{2}/[0-9]{2}/[0-9]{4}</code> pour une date;</li>
+            <li><code>[A-Z0-9]{8,11}</code> pour un BIC.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="mini">Pourquoi on les utilise</div>
+          <ul>
+            <li>elles sont précises;</li>
+            <li>elles sont rapides;</li>
+            <li>elles marchent très bien quand le format est stable.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <h3>Règles de base</h3>
+          <ul>
+            <li><code>\d</code> = un chiffre;</li>
+            <li><code>\s</code> = un espace ou retour ligne;</li>
+            <li><code>+</code> = un ou plusieurs;</li>
+            <li><code>*</code> = zéro ou plusieurs;</li>
+            <li><code>?</code> = optionnel;</li>
+            <li><code>{9}</code> = exactement 9 fois;</li>
+            <li><code>(...)</code> = groupe capturé.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Exemple simple</h3>
+          <pre><code>Num[ée]ro de facture\s*:?\s*([A-Z0-9-]+)</code></pre>
+          <ul>
+            <li><code>Num[ée]ro</code> accepte plusieurs écritures;</li>
+            <li><code>\s*</code> accepte les espaces;</li>
+            <li><code>:?</code> rend le <code>:</code> optionnel;</li>
+            <li>le groupe final capture le numéro de facture.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Quand les utiliser</h3>
+          <ul>
+            <li>sur les documents très structurés;</li>
+            <li>quand les libellés sont fixes;</li>
+            <li>quand le format de la donnée est connu d'avance.</li>
+          </ul>
+          <p>Exemples : URSSAF, KBIS, Attestation SIRET.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Les heuristiques : comment ça fonctionne ?</h2>
+      <div class="duo">
+        <article class="card">
+          <div class="mini">Définition</div>
+          <p>
+            Une heuristique est une règle pratique basée sur le contexte, la position ou l'ordre des éléments dans le document.
+          </p>
+        </article>
+        <article class="card">
+          <div class="mini">Pourquoi on en a besoin</div>
+          <ul>
+            <li>certains documents changent beaucoup selon l'émetteur;</li>
+            <li>l'OCR coupe parfois le texte en plusieurs morceaux;</li>
+            <li>une regex unique serait trop fragile dans ces cas-là.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <h3>Exemple concret</h3>
+          <pre><code>Sevenit GmbH
+Hauptstraße 40
+77654 Offenburg
+Monsieur Jean Dupont
+Acheteur SA
+Rue du Chateau
+34000 Montpellier
+FACTURE
+Description
+...
+Total HT</code></pre>
+        </article>
+        <article class="card">
+          <h3>Règle heuristique</h3>
+          <ul>
+            <li>le mot <code>FACTURE</code> sert de repère;</li>
+            <li>les blocs avant <code>FACTURE</code> contiennent vendeur et client;</li>
+            <li>le premier bloc correspond au vendeur;</li>
+            <li>le second bloc correspond au client.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Autres exemples</h3>
+          <ul>
+            <li>entre <code>Description</code> et <code>Total HT</code> = lignes de facture;</li>
+            <li>entre <code>Domiciliation</code> et <code>IBAN</code> = zone bancaire;</li>
+            <li>un token comme <code>34000 Montpellier</code> ressemble à une ville.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="note">
+        Les heuristiques sont surtout utiles sur les fichiers les moins standardisés : RIB, Facture et Devis.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>La différence essentielle</h2>
+      <div class="duo">
+        <div class="quote-box">
+          <strong>Regex</strong>
+          Je reconnais une forme.
+        </div>
+        <div class="quote-box">
+          <strong>Heuristique</strong>
+          Je déduis une information grâce à la position et au contexte.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Quand utiliser quoi ?</h2>
+      <div class="trio">
+        <article class="card">
+          <div class="mini">Regex</div>
+          <ul>
+            <li>données au format stable;</li>
+            <li>documents officiels;</li>
+            <li>libellés bien identifiables.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="mini">Heuristique</div>
+          <ul>
+            <li>documents semi-structurés;</li>
+            <li>mise en page variable;</li>
+            <li>texte OCR moins propre.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="mini">En pratique</div>
+          <p>
+            Dans le projet, les deux approches sont complémentaires : l'une apporte la précision, l'autre apporte la souplesse.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
